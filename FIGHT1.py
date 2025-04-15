@@ -1,5 +1,4 @@
 import pygame
-import math
 SCREENWIDTH = 1140
 SCREENHEIGHT = 720
 
@@ -11,54 +10,12 @@ achtergrond = pygame.image.load("GevechtBackground.png")
 grond = pygame.image.load("grond.png")
 grond = pygame.transform.scale(grond, (SCREENWIDTH, 100)) 
 
-
 class Object:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
-
-class Figuur(Object):
-    def __init__(self, x, y, kleur):
-        super().__init__(x, y)
-        self.kleur = kleur
-
-    def inFiguur(self):
-        pass
-
-    def draw(self):
-        pass
-
-    def botsing(self, andereFiguur):
-        if(isinstance(self,Cirkel)): #x,y is midden van de cirkel en voor de botsing willen we linker en rechter bovenhoek.
-            x1 = self.x-self.radius
-            y1 = self.y-self.radius
-            x2 = self.x + self.radius
-            y2 = self.y + self.radius
-        else: #voor een rechthoek is x en y de linkerbovenhoek
-            x1 = self.x
-            y1 = self.y
-            x2 = self.x + self.basis
-            y2 = self.y + self.hoogte
-        if(isinstance(andereFiguur,Cirkel)):
-            andereFiguurx1 = andereFiguur.x-andereFiguur.radius
-            andereFiguury1 = andereFiguur.y-andereFiguur.radius
-            andereFiguurx2 = andereFiguur.x + andereFiguur.radius
-            andereFiguury2 = andereFiguur.y + andereFiguur.radius
-        else:
-            andereFiguurx1 = andereFiguur.x
-            andereFiguury1 = andereFiguur.y
-            andereFiguurx2 = andereFiguur.x + andereFiguur.basis
-            andereFiguury2 = andereFiguur.y + andereFiguur.hoogte
-        # https://silentmatt.com/rectangle-intersection/
-
-        if x1 < andereFiguurx2 and x2 > andereFiguurx1 and y1 < andereFiguury2 and y2 > andereFiguury1:
-            return True
-        else:
-            return False
-
     
-class VastObject(Object): #implementatie van figuur collisie-checker
+class VastObject(Object): #implementatie van figuur voor collisie-check
     def __init__(self, x, y, basis, hoogte, sprite_png):
         super().__init__(x, y)
         self.basis = basis
@@ -69,6 +26,9 @@ class VastObject(Object): #implementatie van figuur collisie-checker
         
     def draw(self, screen):
         screen.blit(self.sprite, (self.rect.topleft)) #positie speler afhankelijk van rechthoek i.p.v. omgekeerd
+        
+    def collisie(self, andereObject):
+        return self.rect.colliderect(andereObject.rect)
         
 class BewegendObject(VastObject): 
     def __init__(self, x, y, vx, vy, basis, hoogte, sprite_png):
@@ -88,9 +48,13 @@ class Speler(BewegendObject):
     def __init__(self, x, y, vx, vy, basis, hoogte, sprite_png):
         super().__init__(x, y, vx, vy, basis, hoogte, sprite_png)
         self.facing_left = False 
+        self.vy = 0 
+        self.op_grond = False
+        self.Fz = 1
+        self.hoogte = 15
+        
     def beweeg(self):
         vx = 0
-        vy = 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             vx = 10
@@ -98,11 +62,17 @@ class Speler(BewegendObject):
         if keys[pygame.K_LEFT]:
             vx = -10
             self.facing_left = True
-        if keys[pygame.K_UP]:
-            vy = -10
-        if keys[pygame.K_DOWN]:
-            vy = 10
-        self.move(vx,vy)
+        self.move(vx, self.vy) #de snelheid in de horizontale richitng is constant terwijl die in de verticale richting beïnvloed wordt door te springen
+          
+    def spring(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE] and self.op_grond:
+            self.vy = -self.hoogte #verticale snelheid is negatief want naar boven gericht
+            self.op_grond = False
+            
+        self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
+        self.move(0, self.vy)     
+    
         
     def draw(self, screen):
         if self.facing_left:
@@ -114,14 +84,7 @@ class Speler(BewegendObject):
         
 class Bot(BewegendObject):
     def __init__(self, x, y, vx, vy, basis, hoogte, sprite_png):
-        super().__init__(x, y)
-        self.vx = vx
-        self.vy = vy
-        self.basis = basis
-        self.hoogte = hoogte 
-        self.sprite = pygame.image.load(sprite_png)
-        self.sprite = pygame.transform.scale(self.sprite, (basis, hoogte))
-        self.rect = pygame.Rect(x, y, basis, hoogte) 
+        super().__init__(x, y, vx, vy, basis, hoogte, sprite_png)
         
     def draw(self, screen):
         screen.blit(self.sprite, (self.rect.x, self.rect.y))
@@ -136,35 +99,48 @@ class Bot(BewegendObject):
         super().move(self.vx, self.vy)
 
 
-class Knop(VastObject, Figuur):
-    pass
-
-
-class Obstakel(Figuur):
-    pass
-thes = pygame.image.load("Theseus.png")
-theseus = Speler(0, 500, 2, 0, int(thes.get_width() / 2), int(thes.get_height() / 2), "Theseus.png")
 list_of_objects=[]
-list_of_objects.append(theseus)
+
+thes_png = pygame.image.load("Theseus.png")
+Theseus = Speler(0, 500, 2, 0, int(thes_png.get_width() / 2), int(thes_png.get_height() / 2), "Theseus.png")
+list_of_objects.append(Theseus)
+
+grond_png = pygame.image.load("grond.png")
+grond_png = pygame.transform.scale(grond_png, (SCREENWIDTH, 100))
+grond = VastObject(0,(SCREENHEIGHT-grond_png.get_height()), grond_png.get_width(), grond_png.get_height(), "grond.png") 
+
+list_of_objects.append(grond)
 running = True 
+
 
 while running:
     clock.tick(30)
     screen.fill((0, 0, 0))
     screen.blit(achtergrond,(0,0))
-    screen.blit(grond, (0, SCREENHEIGHT - 100))
     
     for object in list_of_objects:
         if hasattr(object, "draw"):
             object.draw(screen)
         if hasattr(object,"patrol"):
             object.patrol()
+        if hasattr(object, "spring"):
+            object.spring()
         if hasattr(object, "beweeg"):
             object.beweeg()
+        
+    if Theseus.collisie(grond) == True:
+        Theseus.rect.bottom = grond.rect.top
+        Theseus.vy = 0
+        Theseus.op_grond = True
+    else:
+        Theseus.op_grond = False
     
-    #if speler.botsing(bot1) == True:
-        #speler.x = 200
-    
+    #ervoor zorgen dat speler niet uit het scherm komt
+    if Theseus.rect.left < 0:
+        Theseus.rect.left = 0
+    if Theseus.rect.right > SCREENWIDTH:
+        Theseus.rect.right = SCREENWIDTH 
+        
     # Did the user click the window close button?
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
