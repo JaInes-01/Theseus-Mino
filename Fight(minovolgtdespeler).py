@@ -1,3 +1,5 @@
+import pygame
+import math
 SCREENWIDTH = 1140
 SCREENHEIGHT = 720
 
