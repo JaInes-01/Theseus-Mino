@@ -115,7 +115,7 @@ class Minotaurus(BewegendObject):
        if self.facing_left:
             flipped_sprite = pygame.transform.flip(self.sprite, True, False)# gaat minautorus horizontaal flippen als het naar de een andere kant beweegt
             screen.blit(flipped_sprite, self.rect.topleft)
-        else:
+       else:
             screen.blit(self.sprite, self.rect.topleft)
 
         
@@ -157,6 +157,7 @@ while running:
             object.spring()
         if hasattr(object, "beweeg"):
             object.beweeg()
+    Minotaurus1.volg_speler(Theseus) #zorgt dat minotaurus automatisch de speler volgt
         
     if Theseus.collisie(grond) == True:
         Theseus.rect.bottom = grond.rect.top
@@ -164,13 +165,17 @@ while running:
         Theseus.op_grond = True
     else:
         Theseus.op_grond = False
-    
+        
     #ervoor zorgen dat speler niet uit het scherm komt
     if Theseus.rect.left < 0:
         Theseus.rect.left = 0
     if Theseus.rect.right > SCREENWIDTH:
         Theseus.rect.right = SCREENWIDTH 
-        
+    
+    if Minotaurus1.rect.left < 0:
+        Minotaurus1.rect.left = 0
+    if Minotaurus1.rect.right > SCREENWIDTH:
+        Minotaurus1.rect.right = SCREENWIDTH
     # Did the user click the window close button?
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
