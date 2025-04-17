@@ -19,7 +19,7 @@ richtingen = [(0,-2), (2,0), (0,2), (-2,0)] #de 4 beweegopties
 
 # Doolhof van level 1: 
     
-Doolhof_Level1 = [['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X','X','X','X','X','X','X','X', 'X'], [' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', 'X', 'X', 'X','X',' ','X',' ','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ','X',' ',' ',' ','X',' ',' ',' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X','X','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', 'X', ' ',' ',' ',' ',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', 'X','X','X','X',' ','X',' ','X',' ', 'X'], ['X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', 'X', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X','X','X','X','X',' ', 'X'], ['X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', 'X', ' ', ' ', ' ','X',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ','X',' ','X','X','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ',' ',' ','X',' ',' ',' ',' ',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', ' ', 'X', ' ', 'X', 'X','X','X','X','X','X','X','X',' ', 'X'], ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X',' ','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ','X',' ','X',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X',' ','X','X','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ','X',' ',' ',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X', ' ','X','X','X',' ','X',' ','X',' ', 'X'], ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ',' ',' ',' ',' ',' ',' ','X',' ', ' '], ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X','X','X','X','X','X','X','X', 'X']]
+Doolhof_Level1 = [['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X','X','X','X','X','X','X','X', 'X'], [' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', 'X', 'X', 'X','X',' ','X',' ','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ','X',' ',' ',' ','X',' ',' ',' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X','X','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', 'X', ' ',' ',' ',' ',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', 'X','X','X','X',' ','X',' ','X',' ', 'X'], ['X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', 'X', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X','X','X','X','X',' ', 'X'], ['X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', 'X', ' ', ' ', ' ','X',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ','X',' ','X','X','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ',' ',' ','X',' ',' ',' ',' ',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', ' ', 'X', ' ', 'X', 'X','X','X','X','X','X','X','X',' ', 'X'], ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X',' ','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ','X',' ','X',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X',' ','X','X','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ','X',' ',' ',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X', ' ','X','X','X',' ','X',' ','X',' ', 'X'], ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X','X','X','X','X','X','X','X', 'X']]
 
 #startpunt voor aanmaak doolhof: 
 rijen = len(Doolhof_Level1)
@@ -37,12 +37,12 @@ DraadVanAriadne= pygame.transform.scale(DraadVanAriadne, (blokjesgrootte, blokje
 draad_locatie = (11, 3)
 
 # Zwaard toevoegen: 
-Zwaard = pygame.image.load("zwaard.png")
+Zwaard = pygame.image.load("zwaard2.png")
 Zwaard = pygame.transform.scale(Zwaard, (blokjesgrootte, blokjesgrootte))  
 zwaard_locatie = (15, 13)
 
 # Sleutel toevoegen: 
-Sleutel = pygame.image.load("sleutel.png")
+Sleutel = pygame.image.load("sleutel1.png")
 Sleutel = pygame.transform.scale(Sleutel, (blokjesgrootte, blokjesgrootte))  
 sleutel_locatie = (9, 17)
 
@@ -95,7 +95,6 @@ class Speler:
 speler = Speler(start_x * blokjesgrootte, start_y * blokjesgrootte, 'speler.png', 22, 22, 5, 5) #beginpositie wordt bepaald door start_x en start_y te verm met de blokjesgrootte om de speler op de jusite plek in het doolhof te krijgen (dus als start_x = 1 en blokjesgrootte = 30, dan start de speler op 30 pixels van de linkerrand), speler.png geeft de bestandsnaam voor de afbeelding van de speler --> deze wordt door 24, 24 geschaald naar 24 op 24 pixels; 5, 5 geeft de snelheid van de speler aan (dus de speler beweegt telkens 5 pixels als er op de pijltjes degrukt wordt)
 
 # Button class aanmaken:
-
 class Button():
     def __init__(self, image, pos, text_input, font, base_color, hovering_color):
         self.image = image
@@ -127,6 +126,7 @@ class Button():
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
+
 # Functie om het doolhof te tekenen
 def teken_doolhof():
     for y in range(rijen):
@@ -148,23 +148,41 @@ def teken_doolhof():
             # Op het huidige blokje de sleutel zetten: 
             if (y, x) == sleutel_locatie:
                 scherm.blit(Sleutel, (scherm_x, scherm_y))
-                
+        
+def get_font(size):
+    return pygame.font.Font(None, size)
+
 # dingen in de inventaris toevoegen: 
 def check_item_opname(speler):
     global zwaard_locatie, sleutel_locatie, draad_locatie
     speler_locatie = (speler.rect.y // blokjesgrootte, speler.rect.x // blokjesgrootte) # hier berekenen we in welke cel van het doolhof de speler zich bevindt in grid-coord (speler.rect.x en speler.rect.y) --> dit doen we door te delen door blokjesgrootte waardoor de grid-coord van de speler bepaald worden 
-   
+    deur_frames = [
+    pygame.transform.scale(pygame.image.load(f"deur{i}.png"), (200, 300)) for i in range(1, 8)]  # Voor de animatie van de deur
     # Controleer of de speler het zwaard oppakt: 
     if speler_locatie == zwaard_locatie: #als de locatie van de speler en het zwaard gelijk is aan elkaar dan,
         speler.pak_item("zwaard") #pakt de speler het item op en voegt deze toe aan zijn inventaris mbv pak_item()
-         # hiermee verwijst de functie naar de globale variabele ipv de locale en gaat die wijzigen ook buiten de functie 
+         
         zwaard_locatie = None  # Het zwaard is opgepakt, dus verwijder het zwaard van het scherm
     
     # Controleer de schatkist
     if speler_locatie == sleutel_locatie:
-        speler.pak_item("schatkist")
+        speler.pak_item("sleutel")
+        
+        Doolhof_Level1[19][20] = ' ' #hierdoor wordt de uitgang zichtbaar
+        
+        Uitgang_open_tekst = get_font(75).render("You opened the exit!", True, (0,0,0) )
+        Uitgang_open_rect = Uitgang_open_tekst.get_rect(center=(316, 420))
         
         sleutel_locatie = None
+        
+        # om de deuren te laten verschijnen doen we dit met een for-loop:
+        for frame in deur_frames:
+            teken_doolhof() # we tekenen eerst nog eens het doolhof en de speler zodat we gaan bruin scherm als achtergrond hebben
+            speler.draw(scherm)
+            scherm.blit(frame, (225, 70))  # Teken het frame van de deuranimatie op positie (225, 70)
+            scherm.blit(Uitgang_open_tekst, Uitgang_open_rect)  # hiermee tekenen we de tekst op het scherm
+            pygame.display.update()  # Werkt het scherm bij
+            pygame.time.delay(200) #hoe lang een frame op het scherm zichtbaar blijft 
     
     # Controleer de draad
     if speler_locatie == draad_locatie:
@@ -172,8 +190,7 @@ def check_item_opname(speler):
     
         draad_locatie = None
 
-def get_font(size):
-    return pygame.font.Font(None, size)
+
 
 # de button image aanpassen:
 button_surface = pygame.image.load('PLAYQUIT.png')
@@ -220,7 +237,7 @@ def spelen(): #scherm om te spelen
     running = True
     while running:
         clock.tick(20) #hiermee wordt de game beperkt tot max 20 frames per seconde, zodat de beweging stabiel en niet te snel gebeurt 
-        scherm.fill((206,204,184))  # Maak het scherm zwart, hiermee wordt elke oude loop overschreven 
+        scherm.fill((206,204,184))  # Maak het scherm bruin, hiermee wordt elke oude loop overschreven 
     
         # Speler doen bewegen: 
         keys = pygame.key.get_pressed() # hiermee verzamelen we een overxzicht van welke toetsen gedrukt zijn (heb ik uit de les gehaald)
