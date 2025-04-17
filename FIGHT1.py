@@ -101,8 +101,8 @@ class Bot(BewegendObject):
 
 list_of_objects=[]
 
-thes_png = pygame.image.load("Theseus.png")
-Theseus = Speler(0, 500, 2, 0, int(thes_png.get_width() / 2), int(thes_png.get_height() / 2), "Theseus.png")
+thes_png = pygame.image.load("speler.png")
+Theseus = Speler(0, 500, 2, 0, thes_png.get_width()*5, thes_png.get_height()*5, "speler.png")
 list_of_objects.append(Theseus)
 
 grond_png = pygame.image.load("grond.png")
