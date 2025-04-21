@@ -21,7 +21,7 @@ aantal_blokken_verticaal = int(SCREENHEIGHT/tile_grootte)
 #matrix opstellen die past bij het aantal blokken
 rijen = aantal_blokken_verticaal
 kolommen = aantal_blokken_horizontaal
-zeros_matrix = [[0 for _ in range(kolommen)] for _ in range(rijen)]
+zeros_matrix = [[5 for _ in range(kolommen)] for _ in range(rijen)]
 for rij in zeros_matrix:
     print(rij)
     
@@ -42,10 +42,40 @@ map_zero = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_data = [[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-[3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3],
+map_back = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1],
+    [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+]
+
+def teken_background(matrix):
+    for rij_index in range(len(matrix)):       #y-pos
+        for kol_index in range(len(matrix[rij_index])):
+            x = kol_index * tile_grootte
+            y = rij_index * tile_grootte
+            rect = pygame.Rect(kol_index * tile_grootte, rij_index * tile_grootte, tile_grootte, tile_grootte)
+            if matrix[rij_index][kol_index] == 0:
+                pygame.draw.rect(screen, (27, 75, 105), rect)
+            elif matrix[rij_index][kol_index] == 1:
+                pygame.draw.rect(screen, (0, 0, 0), rect)
+      
+map_data = [[1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
+[1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 0, 2, 2, 2],
 [0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -164,8 +194,9 @@ class Speler(BewegendObject):
 
         
 class Bot(BewegendObject):
-    def __init__(self, x, y, dx, dy, fact_basis, fact_hoogte, sprite_png):
-        super().__init__(x, y, dx, dy, fact_basis, fact_hoogte, sprite_png)
+    def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png):
+        super().__init__(x, y, fact_basis, fact_hoogte, sprite_png)
+        self.snelheid = snelheid
         
     def draw(self, screen):
         screen.blit(self.sprite, (self.rect.x, self.rect.y))
@@ -179,10 +210,31 @@ class Bot(BewegendObject):
             self.dx = -self.snelheid
         super().move(self.dx, self.dy)
 
-def rooster(): #visueel hulpmiddel voor het opstellen van de map 
+def rooster():
     for line in range(0,aantal_blokken_horizontaal):
         pygame.draw.line(screen, (255,255,255), (0, line*tile_grootte), (SCREENWIDTH, line*tile_grootte))
         pygame.draw.line(screen, (255,255,255), (line*tile_grootte, 0), (line*tile_grootte, SCREENHEIGHT))
+
+class Vijand(BewegendObject):
+    def __init__(self, x, y, dx, dy, basis, hoogte, sprite_png):
+        super().__init__(x, y, dx, dy, basis, hoogte, sprite_png)
+        self.facing_left = True #in het begin kijkt de minotaurus naar links want hij zit helemaal links
+        self.snelheid = dx #tot nu toe beweegt hij alleen maar horizontaal
+        
+    def volg_speler(self,Speler):#https://stackoverflow.com/questions/50769980/how-do-i-make-an-enemy-follow-the-player-in-pygame(kan gebruiken voor later als minotaurus ook verticaal beweegt)
+        if Speler.rect.centerx < self.rect.centerx: #kijkt of de speler (via het middelpunt van rechthoek van speler) links van de minotaurus ligt
+           self.rect.x -= self.snelheid# minotaurus verplaats zich naar links met self.snelheid aantal pixels
+           self.facing_left = True#Nodig voor draw functie om te weten of we de image moeten flippen of niet
+        elif Speler.rect.centerx > self.rect.centerx:
+             self.rect.x += self.snelheid 
+             self.facing_left = False
+    
+    def draw(self,screen):
+       if self.facing_left:
+            flipped_sprite = pygame.transform.flip(self.sprite, True, False)# gaat minautorus horizontaal flippen als het naar de een andere kant beweegt
+            screen.blit(flipped_sprite, self.rect.topleft)
+       else:
+            screen.blit(self.sprite, self.rect.topleft)
 
 class Map():
     def __init__(self, matrix):
@@ -201,21 +253,24 @@ class Map():
                     tile_afb = VastObject(x, y, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "halve.png")
                     self.tile_list.append(tile_afb)
                     
-                elif matrix[rij_index][kol_index] == 3:
-                    tile_afb = VastObject(x, y,tile_grootte/SCREENWIDTH , tile_grootte/SCREENWIDTH, "plathard.png")
-                    self.tile_list.append(tile_afb)
                     
-                elif matrix[rij_index][kol_index] == 4:
+                elif matrix[rij_index][kol_index] == 3:
                     tile_afb = VastObject(x, y,tile_grootte/SCREENWIDTH , tile_grootte/SCREENWIDTH, "zwaard2.png")
                     self.tile_list.append(tile_afb)
-            
+                    
+                    
     def draw(self, screen):
         for tile in self.tile_list:
             screen.blit(tile.sprite, tile.rect.topleft)
-            
+
 list_of_objects=[]
-Theseus = Speler(0, 500, 0, 2, 1/30, 1/30, "speler.png")
+
+
+Theseus = Speler(20, 500, 0, 2, 1/30, 1/30, "speler.png")
 list_of_objects.append(Theseus)
+
+Minotaurus1 = Vijand(800, 550, 2, 0, 1/10, 1/10, "Minotaurus.png")
+list_of_objects.append(Minotaurus1)
 
 niveau1 = Map(map_data)
 list_of_objects.append(niveau1)
@@ -227,8 +282,9 @@ while running:
     clock.tick(30)
     screen.fill((0, 0, 0))
     screen.blit(achtergrond,(0,0))
-    #screen.blit(grond, (0, SCREENHEIGHT - 100))
-    #rooster() 
+    
+    #rooster()
+    teken_background(map_back)
     niveau1.draw(screen)
     
     for object in list_of_objects:
@@ -236,7 +292,11 @@ while running:
             object.draw(screen)
         if hasattr(object,"patrol"):
             object.patrol()
+    
+
     Theseus.beweging()
+    Minotaurus1.volg_speler(Theseus)
+    
     #ervoor zorgen dat speler niet uit het scherm komt
     if Theseus.rect.left < 0: 
         Theseus.rect.left = 0
@@ -254,5 +314,7 @@ while running:
      # Flip the display
     pygame.display.flip()
 pygame.quit()
+
+
 
 
