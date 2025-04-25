@@ -12,10 +12,7 @@ screen = pygame.display.set_mode([SCREENWIDTH, SCREENHEIGHT])
 clock = pygame.time.Clock()
 fps = 30
 
- 
-
 #de volgende code gebruiken om een zero matrix op te stellen
-
 #scherm opdelen in vierkantjes ('tiles') om obstakels, platforms en grond in te voegen
 aantal_blokken_horizontaal = 20
 tile_grootte = SCREENWIDTH/aantal_blokken_horizontaal
@@ -144,22 +141,16 @@ list_of_objects=[]
 niveau2 = Map(map_niv2)
 list_of_objects.append(niveau2)
 
-
-
-
-Theseus = Speler(20, 500, 0, 2, 1/30, 1/30, "speler.png", niveau2)
+Theseus = Speler(20, 500, 5, 1/30, 1/30, "speler.png", niveau2)
 list_of_objects.append(Theseus)
 
-Minotaurus1 = Vijand(800, 550, 4, 0, 1/10, 1/10, "Minotaurus.png")
+Minotaurus1 = Vijand(800, 550, 6, 1/10, 1/10, "Minotaurus.png")
 list_of_objects.append(Minotaurus1)
 
 #Steen = Projectiel(800, 550, 3, 3, 1/15, 1/15, "Steen.png", Theseus.rect.x, Theseus.rect.y)
 #list_of_objects.append(Steen)
 
-
 running = True 
-
-
 while running:
     clock.tick(30)
     screen.fill((0, 0, 0))
@@ -198,6 +189,107 @@ while running:
      # Flip the display
     pygame.display.flip()
 pygame.quit()
+
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
 
                                   
                                   
