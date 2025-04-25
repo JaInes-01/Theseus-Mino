@@ -26,22 +26,11 @@ class VastObject(): #implementatie van figuur voor collisie-check
 
         
 class BewegendObject(VastObject): 
-    def __init__(self, x, y, vx, vy, fact_basis, fact_hoogte, sprite_png):
+    def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png):
         super().__init__(x, y, fact_basis, fact_hoogte, sprite_png)
-        self.vx = vx
-        self.vy = vy
+        self.snelheid = snelheid
+        
     
-    def move(self, vx, vy):
-        self.rect.x += vx
-        self.rect.y += vy
-
-def volg_speler(self,Speler):#https://stackoverflow.com/questions/50769980/how-do-i-make-an-enemy-follow-the-player-in-pygame(kan gebruiken voor later als minotaurus ook verticaal beweegt)
-    marge = 2 #als de speler statisch is en zijn center niet goed overeenkomt met de mino zal de minotaurus heen en weer bewegen
-    #kijkt of de speler (via het middelpunt van rechthoek van speler) links van de minotaurus ligt
-    if Speler.rect.centerx < self.rect.centerx - marge: #minotaurus verplaatst zich enkel als afstand >= marge 
-        super().move(-self.vx,0) 
-        self.facing_left = True #Nodig voor draw functie om te weten of we de image moeten flippen of niet
-       
-    elif Speler.rect.centerx > self.rect.centerx + marge:
-        super().move(self.vx,0)
-        self.facing_left = False
+    def move(self, snelheidx, snelheidy):
+        self.rect.x += snelheidx #de snelheid die verantwoordelijk is voor de beweging is niet per se dezelfde als die in het argument
+        self.rect.y += snelheidy
