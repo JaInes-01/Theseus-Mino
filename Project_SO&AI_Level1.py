@@ -1,6 +1,9 @@
 # modules en initialisaties:  
 import pygame # Pygame bibliotheek laden 
 import sys
+import random
+import queue
+
 pygame.init() #pygame initialiseren
 
 # het speelveld aanmaken: 
@@ -15,17 +18,68 @@ rijen = 21 #aantal rijen van het doolhof (dus in feite de hoogte van het doolhof
 kolommen = 21 #aantal kolommen van het doolhof (breedte)
 blokjesgrootte = 30 #de grootte van één vierkant in het doolhof
 
+#startpunt voor aanmaak doolhof: 
+start_x = 0
+start_y = 1
+
+# een leeg doolhof aanmaken (dus alleen maar muren, geen paden): 
+doolhof = [] # een lege lijst waar we telkens een "rij" in het doolhof aan gaan toevoegen 
+for y in range(rijen):
+    rij = [] #een nieuwe rij aanmaken
+    for x in range(kolommen):
+        rij.append('X') #voeg een muur "X" toe (hierdoor gaan er dus muren ontstaan)
+    doolhof.append(rij) #nu voegen we dus de nieuwe rij toe aan de lijst "doolhof"
+
 richtingen = [(0,-2), (2,0), (0,2), (-2,0)] #de 4 beweegopties
 
-# Doolhof van level 1: 
-    
-Doolhof_Level1 = [['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X','X','X','X','X','X','X','X', 'X'], [' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', 'X', 'X', 'X','X',' ','X',' ','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ','X',' ',' ',' ','X',' ',' ',' ', 'X'], ['X', ' ', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X','X','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', 'X', ' ',' ',' ',' ',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', 'X','X','X','X',' ','X',' ','X',' ', 'X'], ['X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', 'X', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X','X','X','X','X',' ', 'X'], ['X', ' ', ' ', ' ', 'X', ' ', 'X', ' ', 'X', ' ', ' ', ' ','X',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ','X',' ','X','X','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ',' ',' ','X',' ',' ',' ',' ',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', ' ', 'X', ' ', 'X', 'X','X','X','X','X','X','X','X',' ', 'X'], ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ','X','X','X',' ','X','X','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ','X',' ','X',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X',' ','X','X','X',' ','X',' ', 'X'], ['X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ','X',' ',' ',' ','X',' ','X',' ', 'X'], ['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X', ' ','X','X','X',' ','X',' ','X',' ', 'X'], ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ',' ',' ',' ',' ',' ',' ','X',' ', 'X'], ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X','X','X','X','X','X','X','X','X', 'X']]
 
-#startpunt voor aanmaak doolhof: 
-rijen = len(Doolhof_Level1)
-kolommen = len(Doolhof_Level1)
-start_x = 1
-start_y = 1
+#genereren vh doolhof (nu dus de paden eraan toevoegen):
+def generate_doolhof(x, y): #deze functie gaat dus muren in paden veranderen 
+    doolhof[y][x] = " "  # Maakt van muur een pad, vandaar gewoon een spatie 
+    random.shuffle(richtingen)  # Willekeurige richtingen proberen
+    
+    for dx, dy in richtingen: # dx en dy komen uit de lijst "richtingen"
+        nx, ny = x + dx, y + dy #nx en ny zijn de volgende cel in deze richting
+        if 1 <= nx < kolommen-1 and 1 <= ny < rijen-1 and doolhof[ny][nx] == 'X': # we controleren hier of de nieuwe positie nog binnen het doolhof is en of het nog een muur is --> is dit zo dan kunnen we daar nog een pad van maken 
+            doolhof[y+dy//2][x+dx//2] = " " #dit zorgt voor een verbinding tussen de muren, verwijdert tussenliggende muur (maakt pad)
+            generate_doolhof(nx,ny)
+
+generate_doolhof(1,1) # doolhof genereren vanaf punt (1,1)
+
+doolhof[1][0] = " "   #ingang
+
+#def heuristic(current, goal):
+    # Manhattan distance heuristic
+#    return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
+
+#def A_star(doolhof):
+#    start_state = {'pos':(start_x, start_y),'parent':None, 'afgelegd': 0}
+#    q = queue.PriorityQueue()
+#    random_value = random.randint(1, 1000000)
+#    q.put((0,random_value,start_state))
+#   goal_state = (0, 1)
+    
+#    traveled = []
+#    traveled_set = set()
+    
+#    while q.empty() == False:
+#        priority,random_value,state = q.get()
+#        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+#        for zet in directions:
+#            new_pos = (state['pos'][0]+zet[0],state['pos'][1]+zet[1])
+#            if new_pos not in traveled:
+#                if doolhof[new_pos[0],new_pos[1]] == 0:
+#                    new_state = {'pos':new_pos,'parent':state,'afgelegd':state['afgelegd']+1}
+#                    if new_pos == (len(doolhof)-2,len(doolhof)-1) :
+#                        print("Oplossing gevonden!!!")
+#                        return True
+#                    else:
+#                        priority = heuristic(new_pos, goal_state) + new_state['afgelegd']
+#                        random_value = random.randint(1,100000)
+#                        q.put((priority,random_value,new_state))
+#                        traveled.append(new_pos)
+#    return False
+
 
 # de stenen laden (zodat we stenen muur krijgen ipv witte blokjes):
 steen = pygame.image.load("steen.png")
@@ -76,7 +130,7 @@ class Speler:
         speler_rect = self.rect #het vierkant van de speler
         for y in range(rijen):
             for x in range(kolommen):
-                if Doolhof_Level1[y][x] == "X": #als het blokje gelijk is aan een muur, dan
+                if doolhof[y][x] == "X": #als het blokje gelijk is aan een muur, dan
                     pixel_x = start_x + (x * blokjesgrootte) # hiermee berekenen we de positie op het scherm in pixels van de muur op positie (x, y) in het doolhof
                     pixel_y = start_y + (y * blokjesgrootte)
                     
@@ -131,7 +185,7 @@ class Button():
 def teken_doolhof():
     for y in range(rijen):
         for x in range(kolommen):
-            karakter = Doolhof_Level1[y][x] # we halen ofwel 'X' ofwel ' ' op voor elke cel
+            karakter = doolhof[y][x] # we halen ofwel 'X' ofwel ' ' op voor elke cel
             scherm_x = start_x + (x * blokjesgrootte) # hiermee wordt de pixelpositie op het scherm van het huidige blokje bepaald
             scherm_y = start_y + (y * blokjesgrootte)
             if karakter == "X":  # als het karakter een muur is 
@@ -156,8 +210,7 @@ def get_font(size):
 def check_item_opname(speler):
     global zwaard_locatie, sleutel_locatie, draad_locatie
     speler_locatie = (speler.rect.y // blokjesgrootte, speler.rect.x // blokjesgrootte) # hier berekenen we in welke cel van het doolhof de speler zich bevindt in grid-coord (speler.rect.x en speler.rect.y) --> dit doen we door te delen door blokjesgrootte waardoor de grid-coord van de speler bepaald worden 
-    deur_frames = [
-    pygame.transform.scale(pygame.image.load(f"deur{i}.png"), (200, 300)) for i in range(1, 8)]  # Voor de animatie van de deur
+    deur_frames = [pygame.transform.scale(pygame.image.load(f"deur{i}.png"), (200, 300)) for i in range(1, 8)]  # Voor de animatie van de deur
     # Controleer of de speler het zwaard oppakt: 
     if speler_locatie == zwaard_locatie: #als de locatie van de speler en het zwaard gelijk is aan elkaar dan,
         speler.pak_item("zwaard") #pakt de speler het item op en voegt deze toe aan zijn inventaris mbv pak_item()
@@ -168,7 +221,7 @@ def check_item_opname(speler):
     if speler_locatie == sleutel_locatie:
         speler.pak_item("sleutel")
         
-        Doolhof_Level1[19][20] = ' ' #hierdoor wordt de uitgang zichtbaar
+        doolhof[19][20] = ' ' #hierdoor wordt de uitgang zichtbaar
         
         Uitgang_open_tekst = get_font(75).render("You opened the exit!", True, (0,0,0) )
         Uitgang_open_rect = Uitgang_open_tekst.get_rect(center=(316, 420))
@@ -243,22 +296,22 @@ def spelen(): #scherm om te spelen
         keys = pygame.key.get_pressed() # hiermee verzamelen we een overxzicht van welke toetsen gedrukt zijn (heb ik uit de les gehaald)
         if keys[pygame.K_UP]: # dus als we op het pijltje naar boven drukken, dan zal de speler in de negatieve y-richting bewegen met snelheid y 
             speler.move(0, -speler.snelheid_y)
-            if speler.check_collision(Doolhof_Level1):  # Na elke beweging wordt er gecontroleerd of er geen botsing is tussen de speler en de muur, is dit zo dan wordt de beweging onmiddelijk ongedaan gemaakt waardoor de speler op het pad blijft
+            if speler.check_collision(doolhof):  # Na elke beweging wordt er gecontroleerd of er geen botsing is tussen de speler en de muur, is dit zo dan wordt de beweging onmiddelijk ongedaan gemaakt waardoor de speler op het pad blijft
                 speler.move(0, speler.snelheid_y)
             check_item_opname(speler) #hiermee roepen we de functie op die controleert of de speler zich op hetzelfde punt bevindt als één van de items
         if keys[pygame.K_DOWN]:
             speler.move(0, speler.snelheid_y)
-            if speler.check_collision(Doolhof_Level1):
+            if speler.check_collision(doolhof):
                 speler.move(0, -speler.snelheid_y)
             check_item_opname(speler)
         if keys[pygame.K_LEFT]:
             speler.move(-speler.snelheid_x, 0)
-            if speler.check_collision(Doolhof_Level1):
+            if speler.check_collision(doolhof):
                 speler.move(speler.snelheid_x, 0)
             check_item_opname(speler)
         if keys[pygame.K_RIGHT]:
             speler.move(speler.snelheid_x, 0)
-            if speler.check_collision(Doolhof_Level1):
+            if speler.check_collision(doolhof):
                 speler.move(-speler.snelheid_x, 0)
             check_item_opname(speler)
     
