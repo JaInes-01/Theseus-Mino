@@ -6,47 +6,51 @@ from Map import Map
 
 class Speler(BewegendObject):
     
-    def __init__(self, x, y, vx, vy, fact_basis, fact_hoogte, sprite_png, niveau):
-        super().__init__(x, y, vx, vy, fact_basis, fact_hoogte, sprite_png)
+    def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png, niveau): #snelheid geeft gewoon weer hoe snel de speler zal bewegen
+        super().__init__(x, y,snelheid, fact_basis, fact_hoogte, sprite_png)
         self.facing_left = False 
-        self.vy = 0 
+        self.vy = -2 
         self.op_grond = False
         self.Fz = 1
         self.spring_hoogte = self.hoogte/4
         self.map = niveau
-        
-    def beweging(self):
+        self.snelheid = snelheid
+    def horizontaal(self):
         vx = 0 #speler blijft statisch indien geen keys gedrukt worden
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            vx = 5
+            vx = self.snelheid
             self.facing_left = False
         if keys[pygame.K_LEFT]:
-            vx = -5
+            vx = -self.snelheid
             self.facing_left = True
-              
-        #sprong
+        return vx
+    
+    def sprong(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and self.op_grond:
             self.vy = -self.spring_hoogte #verticale snelheid is negatief want naar boven gericht
             self.op_grond = False
         
-        #zwaartekracht werkt op elk moment
+    def zwaartekracht(self):
         self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
         
-        #dy definiëren
-        vy = self.vy #dy is niet constant zoals dx en hangt af van de sprong
+    
+
         
-        #collisie checken in x-richting
+        
+    def collisie_x(self):
+        vx = self.horizontaal()
         for tile in self.map.tile_list:
             future_x = pygame.Rect(self.rect.x + vx, self.rect.y, self.basis, self.hoogte)
             if tile.rect.colliderect(future_x):
                 if vx > 0:
-                    vx = tile.rect.left - self.rect.right #dx blijft dalen naarmate dat de speler dichter komt, totdat dx nul wordt
+                   vx = tile.rect.left - self.rect.right #dx blijft dalen naarmate dat de speler dichter komt, totdat dx nul wordt
                 elif vx < 0:
                     vx = tile.rect.right - self.rect.left
-                    
-        #collisie checken in y-richting        
+        return vx
+    def collisie_y(self):
+        vy = self.vy
         for tile in self.map.tile_list:
             #op het moment dat de collisie wordt waargenomen is er al overlapping behalve als de speler op die exact moment stopt te bewegen, dus moeten we een toekomstige scenario gebruiken
             future_y = pygame.Rect(self.rect.x, self.rect.y + vy, self.basis, self.hoogte)
@@ -60,9 +64,15 @@ class Speler(BewegendObject):
                 #als de collisie van onder gebeurt, als de speler springt
                 elif self.vy < 0:
                     vy = tile.rect.bottom - self.rect.top #afstand tot de onderkant van de platform
-                    self.vy = 0
-                    
-                    
+                    self.vy = 0      
+        return vy
+    
+    def beweging(self):
+        vx = self.horizontaal()
+        self.zwaartekracht()
+        vy = self.sprong()
+        vx = self.collisie_x()
+        vy = self.collisie_y()
         self.move(vx, vy)
         
     def draw(self, screen):
@@ -71,5 +81,6 @@ class Speler(BewegendObject):
             screen.blit(flipped_sprite, self.rect.topleft)
         else:
             screen.blit(self.sprite, self.rect.topleft)
+
 
 
