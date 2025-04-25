@@ -1,14 +1,13 @@
 import pygame
+import math 
+
 SCREENWIDTH = 1000
 SCREENHEIGHT = 750
 
 pygame.init()
 screen = pygame.display.set_mode([SCREENWIDTH, SCREENHEIGHT])
 clock = pygame.time.Clock()
-#sprites en achtergronden definiëren 
-achtergrond = pygame.image.load("GevechtBackground.png")
-achtergrond = pygame.transform.scale(achtergrond, (SCREENWIDTH,SCREENHEIGHT))
- 
+fps = 30
 
 #de volgende code gebruiken om een zero matrix op te stellen
 SCREENWIDTH = 1000
@@ -71,7 +70,7 @@ def teken_background(matrix):
                 pygame.draw.rect(screen, (27, 75, 105), rect)
             elif matrix[rij_index][kol_index] == 1:
                 pygame.draw.rect(screen, (0, 0, 0), rect)
-      
+  #matrix voor de map    
 map_data = [[1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
 [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -88,11 +87,10 @@ map_data = [[1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
 [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
-class Object:
-    def __init__(self, x, y):
-        pass
+
+
     
-class VastObject(Object): #implementatie van figuur voor collisie-check
+class VastObject(): #implementatie van figuur voor collisie-check
     def __init__(self, x, y, fact_basis, fact_hoogte, sprite_png): #we gebruiken relatieve dimsensies zodat de verhouding tussen de dimensies van alle objecten dezelfde blijven indien we de scherminstellingen veranderen
         self.afbeelding = pygame.image.load(sprite_png)
         originele_basis = self.afbeelding.get_width()
@@ -115,75 +113,82 @@ class VastObject(Object): #implementatie van figuur voor collisie-check
 
         
 class BewegendObject(VastObject): 
-    def __init__(self, x, y, dx, dy, fact_basis, fact_hoogte, sprite_png):
+    def __init__(self, x, y, vx, vy, fact_basis, fact_hoogte, sprite_png):
         super().__init__(x, y, fact_basis, fact_hoogte, sprite_png)
-        self.dx = dx
-        self.dy = dy
+        self.vx = vx
+        self.vy = vy
     
-    def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+    def move(self, vx, vy):
+        self.rect.x += vx
+        self.rect.y += vy
         
+        
+def frames(aantal_frames,):
+    frames = []
+    for i in range(aantal_frames):
+        frames.append(afbeelding(sprite_sheet, i, 24, 24, ))
+    return frames 
 
-
+        
 class Speler(BewegendObject):
     
-    def __init__(self, x, y, dx, dy, fact_basis, fact_hoogte, sprite_png):
-        super().__init__(x, y, dx, dy, fact_basis, fact_hoogte, sprite_png)
+    def __init__(self, x, y, vx, vy, fact_basis, fact_hoogte, sprite_png):
+        super().__init__(x, y, vx, vy, fact_basis, fact_hoogte, sprite_png)
         self.facing_left = False 
-        self.dy = 0 
+        self.vy = 0 
         self.op_grond = False
         self.Fz = 1
         self.spring_hoogte = self.hoogte/4
         
     def beweging(self):
-        dx = 0
+        vx = 0 #speler blijft statisch indien geen keys gedrukt worden
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            dx = 10
+            vx = 5
             self.facing_left = False
         if keys[pygame.K_LEFT]:
-            dx = -10
+            vx = -5
             self.facing_left = True
-            
-        #update de positie     
-        
-        
+              
         #sprong
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and self.op_grond:
-            self.dy = -self.spring_hoogte #verticale snelheid is negatief want naar boven gericht
+            self.vy = -self.spring_hoogte #verticale snelheid is negatief want naar boven gericht
             self.op_grond = False
-            
-        self.dy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
-        dy = self.dy #dy is niet constant zoals dx en hangt af van de sprong
+        
+        #zwaartekracht werkt op elk moment
+        self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
+        
+        #dy definiëren
+        vy = self.vy #dy is niet constant zoals dx en hangt af van de sprong
         
         #collisie checken in x-richting
         for tile in niveau1.tile_list:
-            future_x = pygame.Rect(self.rect.x + dx, self.rect.y, self.basis, self.hoogte)
+            future_x = pygame.Rect(self.rect.x + vx, self.rect.y, self.basis, self.hoogte)
             if tile.rect.colliderect(future_x):
-                if dx > 0:
-                    dx = tile.rect.left - self.rect.right #dx blijft dalen naarmate dat de speler dichter komt, totdat dx nul wordt
-                elif dx < 0:
-                    dx = tile.rect.right - self.rect.left
+                if vx > 0:
+                    vx = tile.rect.left - self.rect.right #dx blijft dalen naarmate dat de speler dichter komt, totdat dx nul wordt
+                elif vx < 0:
+                    vx = tile.rect.right - self.rect.left
                 
         for tile in niveau1.tile_list:
-            future_y = pygame.Rect(self.rect.x, self.rect.y + dy, self.basis, self.hoogte)
-            #collisie checken in y-richting
             #op het moment dat de collisie wordt waargenomen is er al overlapping behalve als de speler op die exact moment stopt te bewegen, dus moeten we een toekomstige scenario gebruiken
+            future_y = pygame.Rect(self.rect.x, self.rect.y + vy, self.basis, self.hoogte)
+            #collisie checken in y-richting
+
             if tile.rect.colliderect(future_y):
                 #als de collsiie van boven gebeurt, als de speler valt
-                if self.dy > 0:
-                    dy = tile.rect.top - self.rect.bottom #afstand tot de bovenkant van de platform
-                    self.dy = 0 #we willen dat de speler stil blijft
+                if self.vy > 0:
+                    vy = tile.rect.top - self.rect.bottom #afstand tot de bovenkant van de platform
+                    self.vy = 0 #we willen dat de speler stil blijft
                     self.op_grond = True 
                 #als de collisie van onder gebeurt, als de speler springt
-                elif self.dy < 0:
-                    dy = tile.rect.bottom - self.rect.top #afstand tot de onderkant van de platform
-                    self.dy = 0
+                elif self.vy < 0:
+                    vy = tile.rect.bottom - self.rect.top #afstand tot de onderkant van de platform
+                    self.vy = 0
                     
                     
-        self.move(dx, dy)
+        self.move(vx, vy)
         
     def draw(self, screen):
         if self.facing_left:
@@ -192,7 +197,7 @@ class Speler(BewegendObject):
         else:
             screen.blit(self.sprite, self.rect.topleft)
 
-        
+
 class Bot(BewegendObject):
     def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png):
         super().__init__(x, y, fact_basis, fact_hoogte, sprite_png)
@@ -204,11 +209,11 @@ class Bot(BewegendObject):
     def patrol(self):
         if self.goal > self.x and self.goal == self.point_left:
             self.goal = self.point_right
-            self.dx = self.snelheid
+            self.vx = self.snelheid
         if self.goal<self.x and self.goal == self.point_right:
             self.goal = self.point_left
-            self.dx = -self.snelheid
-        super().move(self.dx, self.dy)
+            self.vx = -self.snelheid
+        super().move(self.vx, self.vy)
 
 def rooster():
     for line in range(0,aantal_blokken_horizontaal):
@@ -216,26 +221,33 @@ def rooster():
         pygame.draw.line(screen, (255,255,255), (line*tile_grootte, 0), (line*tile_grootte, SCREENHEIGHT))
 
 class Vijand(BewegendObject):
-    def __init__(self, x, y, dx, dy, basis, hoogte, sprite_png):
-        super().__init__(x, y, dx, dy, basis, hoogte, sprite_png)
+    def __init__(self, x, y, vx, vy, basis, hoogte, sprite_png):
+        super().__init__(x, y, vx, vy, basis, hoogte, sprite_png)
         self.facing_left = True #in het begin kijkt de minotaurus naar links want hij zit helemaal links
-        self.snelheid = dx #tot nu toe beweegt hij alleen maar horizontaal
-        
+        self.vx = vx #tot nu toe beweegt hij alleen maar horizontaal
+        self.projectielen = []
+        #we zetten intervallen tussen de gooien
+        self.gooi_timer=0
     def volg_speler(self,Speler):#https://stackoverflow.com/questions/50769980/how-do-i-make-an-enemy-follow-the-player-in-pygame(kan gebruiken voor later als minotaurus ook verticaal beweegt)
-        if Speler.rect.centerx < self.rect.centerx: #kijkt of de speler (via het middelpunt van rechthoek van speler) links van de minotaurus ligt
-           self.rect.x -= self.snelheid# minotaurus verplaats zich naar links met self.snelheid aantal pixels
-           self.facing_left = True#Nodig voor draw functie om te weten of we de image moeten flippen of niet
-        elif Speler.rect.centerx > self.rect.centerx:
-             self.rect.x += self.snelheid 
-             self.facing_left = False
-    
+        marge = 2 #als de speler statisch is en zijn center niet goed overeenkomt met de mino zal de minotaurus heen en weer bewegen
+        #kijkt of de speler (via het middelpunt van rechthoek van speler) links van de minotaurus ligt
+        if Speler.rect.centerx < self.rect.centerx - marge: #minotaurus verplaatst zich enkel als afstand >= marge 
+            super().move(-self.vx,0) 
+            self.facing_left = True #Nodig voor draw functie om te weten of we de image moeten flippen of niet
+           
+        elif Speler.rect.centerx > self.rect.centerx + marge:
+            super().move(self.vx,0)
+            self.facing_left = False
+        
+        
     def draw(self,screen):
-       if self.facing_left:
+        if self.facing_left:
             flipped_sprite = pygame.transform.flip(self.sprite, True, False)# gaat minautorus horizontaal flippen als het naar de een andere kant beweegt
             screen.blit(flipped_sprite, self.rect.topleft)
-       else:
+        else:
             screen.blit(self.sprite, self.rect.topleft)
-
+        for p in self.projectielen:
+            p.draw(screen)
 class Map():
     def __init__(self, matrix):
         self.tile_list = []
@@ -269,8 +281,11 @@ list_of_objects=[]
 Theseus = Speler(20, 500, 0, 2, 1/30, 1/30, "speler.png")
 list_of_objects.append(Theseus)
 
-Minotaurus1 = Vijand(800, 550, 2, 0, 1/10, 1/10, "Minotaurus.png")
+Minotaurus1 = Vijand(800, 550, 4, 0, 1/10, 1/10, "Minotaurus.png")
 list_of_objects.append(Minotaurus1)
+
+#Steen = Projectiel(800, 550, 3, 3, 1/15, 1/15, "Steen.png", Theseus.rect.x, Theseus.rect.y)
+#list_of_objects.append(Steen)
 
 niveau1 = Map(map_data)
 list_of_objects.append(niveau1)
@@ -281,7 +296,6 @@ running = True
 while running:
     clock.tick(30)
     screen.fill((0, 0, 0))
-    screen.blit(achtergrond,(0,0))
     
     #rooster()
     teken_background(map_back)
@@ -292,11 +306,12 @@ while running:
             object.draw(screen)
         if hasattr(object,"patrol"):
             object.patrol()
-    
-
-    Theseus.beweging()
-    Minotaurus1.volg_speler(Theseus)
-    
+        if hasattr(object, "beweging"):
+            object.beweging()
+        if hasattr(object, "volg_speler"):
+            object.volg_speler(Theseus)
+        #if hasattr(object, "Gooien"):
+            #object.Gooien(Theseus)
     #ervoor zorgen dat speler niet uit het scherm komt
     if Theseus.rect.left < 0: 
         Theseus.rect.left = 0
@@ -314,6 +329,104 @@ while running:
      # Flip the display
     pygame.display.flip()
 pygame.quit()
+
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
 
 
 
