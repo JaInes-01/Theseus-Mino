@@ -9,6 +9,8 @@ screen = pygame.display.set_mode([SCREENWIDTH, SCREENHEIGHT])
 clock = pygame.time.Clock()
 fps = 30
 
+ 
+
 #de volgende code gebruiken om een zero matrix op te stellen
 SCREENWIDTH = 1000
 SCREENHEIGHT = 800
@@ -228,18 +230,17 @@ class Vijand(BewegendObject):
         self.projectielen = []
         #we zetten intervallen tussen de gooien
         self.gooi_timer=0
-    def volg_speler(self,Speler):#https://stackoverflow.com/questions/50769980/how-do-i-make-an-enemy-follow-the-player-in-pygame(kan gebruiken voor later als minotaurus ook verticaal beweegt)
-        marge = 2 #als de speler statisch is en zijn center niet goed overeenkomt met de mino zal de minotaurus heen en weer bewegen
-        #kijkt of de speler (via het middelpunt van rechthoek van speler) links van de minotaurus ligt
-        if Speler.rect.centerx < self.rect.centerx - marge: #minotaurus verplaatst zich enkel als afstand >= marge 
-            super().move(-self.vx,0) 
-            self.facing_left = True #Nodig voor draw functie om te weten of we de image moeten flippen of niet
-           
-        elif Speler.rect.centerx > self.rect.centerx + marge:
-            super().move(self.vx,0)
-            self.facing_left = False
-        
-        
+
+    def patrol(self):#nu beweegt de minotaurus heen en weer dit is de eerste 'attaque' van het spel
+        if self.facing_left:
+            self.rect.x -= self.vx
+            if self.rect.left <= 0:
+                self.facing_left = False
+        else:
+            self.rect.x += self.vx
+            if self.rect.right >= SCREENWIDTH:
+                self.facing_left = True
+                
     def draw(self,screen):
         if self.facing_left:
             flipped_sprite = pygame.transform.flip(self.sprite, True, False)# gaat minautorus horizontaal flippen als het naar de een andere kant beweegt
@@ -310,6 +311,7 @@ while running:
             object.beweging()
         if hasattr(object, "volg_speler"):
             object.volg_speler(Theseus)
+            
         #if hasattr(object, "Gooien"):
             #object.Gooien(Theseus)
     #ervoor zorgen dat speler niet uit het scherm komt
@@ -330,6 +332,106 @@ while running:
     pygame.display.flip()
 pygame.quit()
 
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
                                   
                                   
                                   
