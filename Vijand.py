@@ -4,10 +4,10 @@ SCREENWIDTH = 1000
 SCREENHEIGHT = 800
 
 class Vijand(BewegendObject):
-    def __init__(self, x, y, vx, vy, basis, hoogte, sprite_png):
-        super().__init__(x, y, vx, vy, basis, hoogte, sprite_png)
+    def __init__(self, x, y, snelheid, basis, hoogte, sprite_png):
+        super().__init__(x, y, snelheid, basis, hoogte, sprite_png)
         self.facing_left = True #in het begin kijkt de minotaurus naar links want hij zit helemaal links
-        self.vx = vx #tot nu toe beweegt hij alleen maar horizontaal
+        self.vx = snelheid #tot nu toe beweegt hij alleen maar horizontaal
         self.projectielen = []
         #we zetten intervallen tussen de gooien
         self.gooi_timer=0
