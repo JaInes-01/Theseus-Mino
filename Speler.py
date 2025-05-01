@@ -1,22 +1,34 @@
 import pygame
+import time
 SCREENWIDTH = 1000
 SCREENHEIGHT = 800
 from Objecten import BewegendObject
-from Map import Map
+
 
 class Speler(BewegendObject):
     
-    def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png, niveau): #snelheid geeft gewoon weer hoe snel de speler zal bewegen
+    def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png, map_level): #snelheid geeft gewoon weer hoe snel de speler zal bewegen
         super().__init__(x, y,snelheid, fact_basis, fact_hoogte, sprite_png)
         self.facing_left = False 
-        self.vy = -2 
+        self.vy = 0
+        self.vx = 0
+        self.snelheid = snelheid
+        #springfucntie
         self.op_grond = False
         self.Fz = 1
-        self.spring_hoogte = self.hoogte/4
-        self.map = niveau
-        self.snelheid = snelheid
+        self.spring_hoogte = self.hoogte/3
+        #collisie met vijand
+        self.pushed = False
+        self.push_start = 0
+        self.push_duur = 0.5
+        self.schild = False
+        self.schild_start = 0
+        self.schild_duur = 4
+        self.hp = 0
+        self.points = 0
+        
     def horizontaal(self):
-        vx = 0 #speler blijft statisch indien geen keys gedrukt worden
+        vx = 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             vx = self.snelheid
@@ -31,17 +43,17 @@ class Speler(BewegendObject):
         if keys[pygame.K_SPACE] and self.op_grond:
             self.vy = -self.spring_hoogte #verticale snelheid is negatief want naar boven gericht
             self.op_grond = False
+        self.zwaartekracht()
         
     def zwaartekracht(self):
         self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
         
-    
-
-        
-        
-    def collisie_x(self):
-        vx = self.horizontaal()
-        for tile in self.map.tile_list:
+    def schild_aan(self):
+        self.schild = True
+        self.schild_start = time.time()
+            
+    def collisie_x(self, vx, map_level):
+        for tile in map_level.tile_list:
             future_x = pygame.Rect(self.rect.x + vx, self.rect.y, self.basis, self.hoogte)
             if tile.rect.colliderect(future_x):
                 if vx > 0:
@@ -49,9 +61,10 @@ class Speler(BewegendObject):
                 elif vx < 0:
                     vx = tile.rect.right - self.rect.left
         return vx
-    def collisie_y(self):
+    
+    def collisie_y(self, map_level):
         vy = self.vy
-        for tile in self.map.tile_list:
+        for tile in map_level.tile_list:
             #op het moment dat de collisie wordt waargenomen is er al overlapping behalve als de speler op die exact moment stopt te bewegen, dus moeten we een toekomstige scenario gebruiken
             future_y = pygame.Rect(self.rect.x, self.rect.y + vy, self.basis, self.hoogte)
             
@@ -67,13 +80,25 @@ class Speler(BewegendObject):
                     self.vy = 0      
         return vy
     
-    def beweging(self):
-        vx = self.horizontaal()
-        self.zwaartekracht()
-        vy = self.sprong()
-        vx = self.collisie_x()
-        vy = self.collisie_y()
-        self.move(vx, vy)
+    
+    def beweging(self, map_level):
+        
+        if not self.pushed:
+            self.vx = self.horizontaal()
+        else:
+            tijdsverschil_push = time.time()-self.push_start 
+            if tijdsverschil_push > self.push_duur:
+                self.pushed = False
+                self.vx = 0
+                
+        tijdsverschil_schild = time.time()-self.schild_start  
+        if self.schild and tijdsverschil_schild > self.schild_duur:
+            self.schild = False
+        self.sprong()
+        vx = self.collisie_x(self.vx, map_level)
+        self.move(vx, 0)
+        vy = self.collisie_y(map_level)
+        self.move(0,vy)
         
     def draw(self, screen):
         if self.facing_left:
