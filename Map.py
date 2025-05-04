@@ -23,10 +23,6 @@ class Map():
                     tile_afb = VastObject(x, y, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "halve.png")
                     self.tile_list.append(tile_afb)
                     
-                    
-                elif self.matrix[rij_index][kol_index] == 3:
-                    tile_afb = VastObject(x, y,tile_grootte/SCREENWIDTH , tile_grootte/SCREENWIDTH, "zwaard2.png")
-                    self.tile_list.append(tile_afb)
     def draw(self, screen):
         for tile in self.tile_list:
             screen.blit(tile.sprite, tile.rect.topleft)
