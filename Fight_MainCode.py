@@ -118,10 +118,12 @@ Mini1 = Mini_monsters(5*tile_grootte, 9*tile_grootte, 2, tile_grootte/SCREENWIDT
 Mini2 = Mini_monsters(11*tile_grootte, 3*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
 Mini3 = Mini_monsters(17*tile_grootte, 7*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
 
-#Mino2 = Minotaurus2(-60, 550, 3, 1/10, 1/10, "Minotaurus.png", Theseus, niveau2)
+#LEVEL3
+stenen = pygame.sprite.Group()
+Mino2 = Minotaurus2(700, 550, 6 , 1/10, 1/10, "Minotaurus.png", Theseus, niveau1, stenen)
 
 #we maken een dictionary aan van alle levels, met hun map, objecten en vijand
-levels = {1:{"map": niveau1, "vijand" : [Mino1]}, 2:{"map": niveau2, "vijand": [Mini1, Mini2]}}
+levels = {1:{"map": niveau1, "vijand" : [Mino1]}, 2:{"map": niveau2, "vijand": [Mini1, Mini2]}, 3:{"map": niveau3, "vijand": [Mino2]}}
 
 def reset_level():
     global Theseus, Mino1, Mino2
@@ -136,7 +138,10 @@ def reset_level():
         Theseus = Speler(20, 500, 5, 1/30, 1/30, "speler.png", map_data, Zwaard)
         #Mini1 = Mini_monsters(4*tile_grootte, 3*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
         levels[huidige_level]["vijand"] = [Mini1, Mini2, Mini3]
-        
+    
+    if huidige_level == 3:
+        Theseus = Speler(20, 500, 5, 1/30, 1/30, "speler.png", map_data, Zwaard)
+        levels[huidige_level]["vijand"] = [Mino2]
         
 arrival_duur = 2
 arrival_start = 0
@@ -173,6 +178,10 @@ def game_run(levels):
          #   vijand.draw(screen)
          #   vijand.beweging(Theseus, map_data, screen)
         #vijand.attack(Theseus)
+    
+    if huidige_level == 3:
+        stenen.beweging()
+        stenen.draw(screen)
     
     #De speler krijgt 3 levens en de vijand 4. Om de spel langer te laten te duren moet de speler de vijand misntens 20 keer de muur inrammen 
     if Theseus.hp < -3:
@@ -229,7 +238,6 @@ while running:
      # Flip the display
     pygame.display.flip()
 pygame.quit()
-
                                   
                                   
                                   
