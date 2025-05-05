@@ -55,4 +55,4 @@ class Speler:
     def pak_item(self, item):
         if item not in self.inventaris: #als het item nog niet in de inventaris zit ga je deze toevoegen 
             self.inventaris.append(item)
-            print(f"{item} is toegevoegd aan de inventaris!")
+            #print(f"{item} is toegevoegd aan de inventaris!")

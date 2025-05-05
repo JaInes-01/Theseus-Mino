@@ -35,5 +35,3 @@ class Minotaurus:
         minotaurus_afbeelding = pygame.image.load("minotaurus.png")
         minotaurus_afbeelding = pygame.transform.scale(minotaurus_afbeelding, (blokjesgrootte, blokjesgrootte))
         screen.blit(minotaurus_afbeelding, (self.rect.x, self.rect.y))
-        
-        #scxwcsqdDSqdDSQDSQdsqqqds

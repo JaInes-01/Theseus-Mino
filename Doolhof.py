@@ -21,6 +21,16 @@ richtingen = [(0,-2), (2,0), (0,2), (-2,0)] #de 4 beweegopties
 a_star_richtingen = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # 1-step moves
 
 
+# de stenen laden (zodat we stenen muur krijgen ipv witte blokjes):
+steen = pygame.image.load("steen.png")
+steen = pygame.transform.scale(steen, (blokjesgrootte, blokjesgrootte))  # de afbeelding van schaal aanpassen zodat het overeenkomt met de grootte van een blokje
+
+# De draad van Ariadne toevoegen:
+DraadVanAriadne = pygame.image.load("DraadAriadne.png")  
+DraadVanAriadne= pygame.transform.scale(DraadVanAriadne, (blokjesgrootte, blokjesgrootte))  
+#draad_locaties = [(4, 8), (2, 16), (11, 3), (15, 13)]  # Hier geef je de vaste locaties aan
+
+
 #Sleutel toevoegen: 
 Sleutel = pygame.image.load("sleutel1.png")
 Sleutel = pygame.transform.scale(Sleutel, (blokjesgrootte, blokjesgrootte))  
@@ -35,6 +45,23 @@ for y in range(rijen):
         rij.append('X') #voeg een muur "X" toe (hierdoor gaan er dus muren ontstaan)
     doolhof.append(rij) #nu voegen we dus de nieuwe rij toe aan de lijst "doolhof"
 
+def random_pos():
+    while True:
+        x = random.randint(12, 20)
+        y = random.randint(1, 20)
+        if doolhof[x][y] != 'X': 
+                return(x,y)
+            
+def kies_draadlocaties(aantal=4):
+    locaties = []
+    while len(locaties) < aantal:
+        x = random.randint(1, kolommen - 2)
+        y = random.randint(1, rijen - 2)
+        if doolhof[y][x] == " " and (y, x) not in locaties:
+            locaties.append((y, x))
+    return locaties
+
+
 #genereren vh doolhof (nu dus de paden eraan toevoegen):
 def generate_doolhof(x, y): #deze functie gaat dus muren in paden veranderen 
     doolhof[y][x] = " "  # Maakt van muur een pad, vandaar gewoon een spatie 
@@ -47,6 +74,7 @@ def generate_doolhof(x, y): #deze functie gaat dus muren in paden veranderen
             generate_doolhof(nx,ny)
 
 generate_doolhof(1,1) # doolhof genereren vanaf punt (1,1)
+draad_locaties = kies_draadlocaties()
 
 doolhof[1][0] = " "   #ingang
 
@@ -61,7 +89,7 @@ def teken_doolhof():
             if karakter == "X":
                 scherm.blit(steen, (scherm_x, scherm_y))
                 
-            if (y, x) in Draad_locaties:  # Controleer of deze locatie een draad is
+            if (y, x) in draad_locaties:  # Controleer of deze locatie een draad is
                 scherm.blit(DraadVanAriadne, (scherm_x, scherm_y))
 
             if (y, x) == sleutel_locatie:
@@ -77,16 +105,16 @@ def genereer_doolhof_met_bereikbaarheid(uitgang_pos):
 
         # Gebruik DFS of een willekeurige generatietechniek om paden te maken
         generate_doolhof(1, 1)  # Hier moet je je originele doolhofgeneratie code aanroepen
+        
 
         # Controleer de verbinding van alles:
         speler_pos = (start_y_speler, start_x_speler)
         #uitgang_pos = (33,25)
         sleutel_pos = (9, 17)
-        Draad_locaties = []
+        draad_locaties = kies_draadlocaties()
 
-        if alles_verbonden(doolhof, speler_pos, uitgang_pos, sleutel_pos, Draad_locaties):
+        if alles_verbonden(doolhof, speler_pos, uitgang_pos, sleutel_pos, draad_locaties):
             return doolhof  # Als alles bereikbaar is, retourneer het doolhof
-
 
 def a_star(doolhof, start, doel):
     open_list = []  # The list of nodes to be evaluated
@@ -155,33 +183,8 @@ def controleer_pad(doolhof, start, doel):
     pad = a_star(doolhof, start, doel)
     return bool(pad)  # True als er een pad is
 
-def alles_verbonden(doolhof, speler_pos, uitgang_pos, sleutel_pos, Draad_locaties):
+def alles_verbonden(doolhof, speler_pos, uitgang_pos, sleutel_pos, draad_locaties):
     return (controleer_pad(doolhof, speler_pos, uitgang_pos) and
             controleer_pad(doolhof, speler_pos,) and
             controleer_pad(doolhof, speler_pos, sleutel_pos) and
-            all(controleer_pad(doolhof, speler_pos, draad) for draad in Draad_locaties))  # Controleer ALLE draden
-
-def random_pos():
-    while True:
-        x = random.randint(5, 20)
-        y = random.randint(1, 20)
-        if doolhof[x][y] != 'X': 
-                return(x,y)
-            
-# de stenen laden (zodat we stenen muur krijgen ipv witte blokjes):
-steen = pygame.image.load("steen.png")
-steen = pygame.transform.scale(steen, (blokjesgrootte, blokjesgrootte))  # de afbeelding van schaal aanpassen zodat het overeenkomt met de grootte van een blokje
-
-# De draad van Ariadne toevoegen:
-DraadVanAriadne = pygame.image.load("DraadAriadne.png")  
-DraadVanAriadne= pygame.transform.scale(DraadVanAriadne, (blokjesgrootte, blokjesgrootte))  
-Draad_locaties = []  # Hier geef je de vaste locaties aan
-Aantal_draad = 3  # Hier geef je de vaste locaties aan
-
-pos_set = set()
-
-while len(Draad_locaties) < Aantal_draad:
-    pos = random_pos()
-    if pos not in pos_set:
-       Draad_locaties.append(pos)
-       pos_set.add(pos)
+            all(controleer_pad(doolhof, speler_pos, draad) for draad in draad_locaties))  # Controleer ALLE draden
