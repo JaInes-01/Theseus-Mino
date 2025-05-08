@@ -20,6 +20,7 @@ start_y_vijand = random_pos()[1]
 
 # We definiëren ook de minotaurus adhv de functie Minotaurus() uit de module Minotaurus_Doolhof. Met als input de startpositie van de minotaurus, en de snelheid van de minotaurus (gelijk aan 15): 
 minotaurus = Minotaurus(start_x_vijand * blokjesgrootte , start_y_vijand * blokjesgrootte ,snelheid = 15)
+# de blokjesgrootte converteert grid-coord naar pixels
 
 
 # Hier bepalen we de startpostie van de speler (deze liggen vast aangezien we willen dat de speler telkens op dezelfde plek begint): 
@@ -30,8 +31,8 @@ start_y_speler = 1
 speler = Speler(start_x_speler * blokjesgrootte , start_y_speler * blokjesgrootte , 'speler.png', 22, 22, 5, 5) 
 #--> beginpositie wordt bepaald door start_x en start_y te verm met de blokjesgrootte om de speler op de jusite plek in het doolhof te krijgen (dus als start_x = 1 en blokjesgrootte = 30, dan start de speler op 30 pixels van de linkerrand), speler.png geeft de bestandsnaam voor de afbeelding van de speler --> deze wordt door 24, 24 geschaald naar 24 op 24 pixels; 5, 5 geeft de snelheid van de speler aan (dus de speler beweegt telkens 5 pixels als er op de pijltjes degrukt wordt)
 
-# We initiëren cooldowns, zodat de speler niet meteen kan teleporteren (om spel moeilijker te maken )
-draad_cooldowns = {draad: 0 for draad in draad_locaties}
+# We initiëren cooldowns, zodat de speler niet meteen kan teleporteren (om spel moeilijker te maken)
+draad_cooldowns = {draad: 0 for draad in draad_locaties} #Het houdt bij wanneer de een draad laatst gebruikt is waardoor het teleporteren niet omiddelijk lukt 
 
 # Hiermee checken we of er een botsing is tussen de speler en de minotaurus: 
 def check_botsing(speler, minotaurus):
