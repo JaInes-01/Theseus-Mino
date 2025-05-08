@@ -11,8 +11,6 @@ from Teleporteren_Doolhof import teleport_speler
 
 # Vervolgens initialiseren we pygame: 
 pygame.init() 
-
-
             
 # Voor verder gebruik bepalen we de startposities (x, y) van de minotaurus (vijand). Dit doen we door voor zowel x als y de functie random_pos() op te roepen voor positie [0] en positie [1]:
 start_x_vijand = random_pos()[0]
@@ -21,7 +19,6 @@ start_y_vijand = random_pos()[1]
 # We definiëren ook de minotaurus adhv de functie Minotaurus() uit de module Minotaurus_Doolhof. Met als input de startpositie van de minotaurus, en de snelheid van de minotaurus (gelijk aan 15): 
 minotaurus = Minotaurus(start_x_vijand * blokjesgrootte , start_y_vijand * blokjesgrootte ,snelheid = 15)
 # de blokjesgrootte converteert grid-coord naar pixels
-
 
 # Hier bepalen we de startpostie van de speler (deze liggen vast aangezien we willen dat de speler telkens op dezelfde plek begint): 
 start_x_speler = 0
@@ -33,51 +30,6 @@ speler = Speler(start_x_speler * blokjesgrootte , start_y_speler * blokjesgroott
 
 # We initiëren cooldowns, zodat de speler niet meteen kan teleporteren (om spel moeilijker te maken)
 draad_cooldowns = {draad: 0 for draad in draad_locaties} #Het houdt bij wanneer de een draad laatst gebruikt is waardoor het teleporteren niet omiddelijk lukt 
-
-# Hiermee checken we of er een botsing is tussen de speler en de minotaurus: 
-def check_botsing(speler, minotaurus):
-    return speler.rect.colliderect(minotaurus.rect)
-
-       
-def get_font(size):
-    return pygame.font.Font(None, size)
-
-
-# dingen in de inventaris toevoegen: 
-def check_item_opname(speler):
-    global sleutel_locatie, draad_locaties
-    speler_locatie = (speler.rect.y // blokjesgrootte, speler.rect.x // blokjesgrootte) # hier berekenen we in welke cel van het doolhof de speler zich bevindt in grid-coord (speler.rect.x en speler.rect.y) --> dit doen we door te delen door blokjesgrootte waardoor de grid-coord van de speler bepaald worden 
-    deur_frames = [pygame.transform.scale(pygame.image.load(f"deur{i}.png"), (200, 300)) for i in range(1, 8)]  # Voor de animatie van de deur
-    
-    # Controleer of de speler de schatkist oppakt:
-    if speler_locatie == Doolhof.sleutel_locatie: #als de locatie van de speler en de sleutel gelijk is aan elkaar dan,
-        speler.pak_item("sleutel") #pakt de speler het item op en voegt deze toe aan zijn inventaris mbv pak_item()
-        
-        doolhof[23][32] = ' ' #hierdoor wordt de uitgang zichtbaar
-        
-        
-        Uitgang_open_tekst = get_font(75).render("You opened the exit!", True, (0,0,0) )
-        Uitgang_open_rect = Uitgang_open_tekst.get_rect(center=(500, 500))
-        
-        # sleutel_locatie = None # De sleutel is opgepakt, dus verwijder de sleutel van het scherm
-        Doolhof.sleutel_locatie = None
-        
-        # om de deuren te laten verschijnen doen we dit met een for-loop:
-        for frame in deur_frames:
-            teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, Doolhof.sleutel_locatie) # we tekenen eerst nog eens het doolhof en de speler zodat we gaan bruin scherm als achtergrond hebben
-            speler.draw(scherm)
-            scherm.blit(frame, (400, 150))  # Teken het frame van de deuranimatie op positie (400, 150)
-            scherm.blit(Uitgang_open_tekst, Uitgang_open_rect)  # hiermee tekenen we de tekst op het scherm
-            pygame.display.update()  # Werkt het scherm bij
-            pygame.time.delay(200) #hoe lang een frame op het scherm zichtbaar blijft 
-    
-    # Controleer de draad
-  
-    #if speler_locatie in draad_locaties:
-        #speler.pak_item("draad")  # Pak de draad
-        #teleport_speler(speler, draad_locaties, draad_cooldowns)
-
-
 
 # de button image aanpassen:
 button_surface = pygame.image.load('PLAYQUIT.png')
@@ -93,13 +45,49 @@ botsing_afbeelding = pygame.transform.scale(botsing_afbeelding, (schermbreedte, 
 gewonnen_afbeelding = pygame.image.load("YouWon.png")  # Zorg ervoor dat je een afbeelding hebt met deze naam
 gewonnen_afbeelding = pygame.transform.scale(gewonnen_afbeelding, (schermbreedte, schermhoogte))
 
-# Function to reset everything in the game to start fresh
+# Hiermee checken we of er een botsing is tussen de speler en de minotaurus: 
+def check_botsing(speler, minotaurus):
+    return speler.rect.colliderect(minotaurus.rect)
+# zowel de speler als de minotaurus hebben een rechthoek (rect) die gebruikt wordt om een object in het spel visueel te representeren. Hierdoor kunnen we controleren of er een overlap (botsing) is tussen de speler en de minotaurus met colliderect (geeft True als ze elkaar raken en anders False)
+
+# Met deze functie wordt het een lettertype ingevoerd met als input een bepaalde grootte:
+def get_font(size):
+    return pygame.font.Font(None, size)
+
+def check_item_opname(speler):
+    global sleutel_locatie
+    speler_locatie = (speler.rect.y // blokjesgrootte, speler.rect.x // blokjesgrootte) # hier berekenen we in welke cel van het doolhof de speler zich bevindt in grid-coord (speler.rect.x en speler.rect.y) --> dit doen we door te delen door blokjesgrootte waardoor de grid-coord van de speler bepaald worden 
+    deur_frames = [pygame.transform.scale(pygame.image.load(f"deur{i}.png"), (200, 300)) for i in range(1, 8)]  # Voor de animatie van de deur
+    
+    # Controleer of de speler de schatkist oppakt:
+    if speler_locatie == Doolhof.sleutel_locatie: #als de locatie van de speler en de sleutel gelijk is aan elkaar dan,
+        speler.pak_item("sleutel") #pakt de speler het item op en voegt deze toe aan zijn inventaris mbv pak_item()
+        
+        doolhof[23][32] = ' ' # hierdoor wordt de uitgang zichtbaar eens de speler de sleutel te pakken heeft
+        
+        # Hiermee wordt er een tekst op het scherm getoond als de speler de sleutel heeft: 
+        Uitgang_open_tekst = get_font(75).render("You opened the exit!", True, (0,0,0) )
+        Uitgang_open_rect = Uitgang_open_tekst.get_rect(center=(500, 500))
+        
+        # sleutel_locatie = None # De sleutel is opgepakt, dus verwijder de sleutel van het scherm (er is geen locatie meer)
+        Doolhof.sleutel_locatie = None
+        
+        # om de deuren te laten verschijnen doen we dit met een for-loop:
+        for frame in deur_frames:
+            teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, Doolhof.sleutel_locatie) # we tekenen eerst nog eens het doolhof en de speler zodat we gaan bruin scherm als achtergrond hebben
+            speler.draw(scherm)
+            scherm.blit(frame, (400, 150))  # Teken het frame van de deuranimatie op positie (400, 150)
+            scherm.blit(Uitgang_open_tekst, Uitgang_open_rect)  # hiermee tekenen we de tekst op het scherm
+            pygame.display.update()  # Werkt het scherm bij
+            pygame.time.delay(200) #hoe lang een frame op het scherm zichtbaar blijft 
+
+# Deze functie zorgt ervoor dat als de speler op de "restart" drukt het spel reset wordt maar het origineel gegenereerde doolhof behouden blijft. 
 def reset_game():
     global speler, minotaurus
-    # Reset player position to starting point
+    # Reset de positie van de speler naar zijn originele startplaats
     speler.rect.x = start_x_speler * blokjesgrootte  # Set player X position
     speler.rect.y = start_y_speler * blokjesgrootte  # Set player Y position
-    # Reset minotaur position to a new random location
+    # Reset de positie van de minotaurus naar een random positie 
     start_x_vijand = random_pos()[0]  # Generate random X for minotaur
     start_y_vijand = random_pos()[1]  # Generate random Y for minotaur
     minotaurus.rect.x = start_x_vijand * blokjesgrootte  # Set minotaur X position
