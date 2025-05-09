@@ -192,8 +192,12 @@ def gevecht():
                     running = False
 
         pygame.display.flip()
-gevecht()
-pygame.quit()
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
+    clock = pygame.time.Clock()
+    gevecht()
+    pygame.quit()
                                   
                                   
                                   
