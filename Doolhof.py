@@ -1,6 +1,8 @@
 import random 
 import pygame
 
+
+
 schermbreedte = 1000
 schermhoogte = 800
 scherm = pygame.display.set_mode([schermbreedte, schermhoogte]) #maakt het scherm met de opgegeven breedte en hoogte 
@@ -29,8 +31,6 @@ steen = pygame.transform.scale(steen, (blokjesgrootte, blokjesgrootte))  # de af
 DraadVanAriadne = pygame.image.load("DraadAriadne.png")  
 DraadVanAriadne= pygame.transform.scale(DraadVanAriadne, (blokjesgrootte, blokjesgrootte))  
 
-
-
 #Sleutel toevoegen: 
 Sleutel = pygame.image.load("sleutel1.png")
 Sleutel = pygame.transform.scale(Sleutel, (blokjesgrootte, blokjesgrootte))  
@@ -39,6 +39,7 @@ sleutel_locatie = (9, 17)
 start_x_speler = 0
 start_y_speler = 1
 
+moeilijkheid = None
 for y in range(rijen):
     rij = [] #een nieuwe rij aanmaken
     for x in range(kolommen):
@@ -52,7 +53,7 @@ def random_pos():
         if doolhof[x][y] != 'X': 
                 return(x,y)
             
-def kies_draadlocaties(aantal=4):
+def kies_draadlocaties(aantal):
     locaties = []
     while len(locaties) < aantal:
         x = random.randint(1, kolommen - 2)
@@ -60,15 +61,6 @@ def kies_draadlocaties(aantal=4):
         if doolhof[y][x] == " " and (y, x) not in locaties:
             locaties.append((y, x))
     return locaties
-
-#def kies_sleutellocaties(aantal=4):
- #   locaties = []
-  #  while len(locaties) < aantal:
-   #     x = random.randint(1, kolommen - 2)
-    #    y = random.randint(1, rijen - 2)
-     #   if doolhof[y][x] == " " and (y, x) not in locaties:
-      #      locaties.append((y, x))
-    # return locaties
 
 
 #genereren vh doolhof (nu dus de paden eraan toevoegen):
@@ -82,17 +74,19 @@ def generate_doolhof(x, y): #deze functie gaat dus muren in paden veranderen
             doolhof[y+dy//2][x+dx//2] = " " #dit zorgt voor een verbinding tussen de muren, verwijdert tussenliggende muur (maakt pad)
             generate_doolhof(nx,ny)
 
+
 generate_doolhof(1,1) # doolhof genereren vanaf punt (1,1)
-draad_locaties = kies_draadlocaties()
-# sleutel_locaties = kies_sleutellocaties()
+
+if moeilijkheid == "easy":
+        aantal_draden = 5
+else:
+    aantal_draden = 3
+draad_locaties = kies_draadlocaties(aantal_draden)
+
 
 doolhof[1][0] = " "   #ingang
 
 # Functie om het doolhof te tekenen
-# Doolhof.py
-
-# --- geen sleutel_locatie meer bovenaan! ---
-
 def teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie):
     for y in range(rijen):
         for x in range(kolommen):
@@ -120,12 +114,9 @@ def genereer_doolhof_met_bereikbaarheid(uitgang_pos):
 
         # Controleer de verbinding van alles:
         speler_pos = (start_y_speler, start_x_speler)
-        #uitgang_pos = (33,25)
-        #sleutel_pos = (9, 17)
-        sleutel_locaties = kies_draadlocaties()
         draad_locaties = kies_draadlocaties()
 
-        if alles_verbonden(doolhof, speler_pos, uitgang_pos, sleutel_locaties, draad_locaties):
+        if alles_verbonden(doolhof, speler_pos, uitgang_pos, sleutel_locatie, draad_locaties):
             return doolhof  # Als alles bereikbaar is, retourneer het doolhof
 
 def a_star(doolhof, start, doel):
