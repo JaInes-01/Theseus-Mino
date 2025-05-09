@@ -43,7 +43,8 @@ class Minotaurus1(Vijand):
                     speler.health -= 1
                     speler.schild_aan()
                     self.push(speler)
-                
+                else:
+                    pass
             if speler.health <= 0:
                 speler.alive = False
                 self.vertraag_duur = 1000
