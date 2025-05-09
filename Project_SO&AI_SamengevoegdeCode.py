@@ -210,47 +210,6 @@ def game_over(flag):
         
         pygame.display.update()  # Scherm bijwerken na elke frame
 
-def gevecht_loop():
-    huidige_level = 1
-    intro = Fight_MainCode.Intro()
-    while True:
-        clock.tick(fps)
-        for ev in pygame.event.get():
-            if ev.type == pygame.QUIT:
-                pygame.quit(); sys.exit()
-            if ev.type == pygame.KEYDOWN and ev.key == pygame.K_l:
-                # skip or end intro
-                intro.finished = True
-
-        intro.run(screen)
-        if time.time() - intro.anim_start >= intro.anim_duur:
-            intro.displayed = True
-            font = pygame.font.SysFont(None, 40)
-            game_over_text = font.render("Press 'l' to start", True, (255, 255, 255))
-            text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))
-            screen.blit(game_over_text, text_rect)# draws its frames
-        if intro.finished:
-            break        # exit intro loop
-        pygame.display.flip()
-
-    # --- 2) ACTUAL FIGHT ---
-    Fight_MainCode.reset_level()
-    fight_running = True
-    while fight_running:
-        clock.tick(fps)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit(); sys.exit()
-        # draw fight frame
-        Fight_MainCode.game_run(Fight_MainCode.levels)
-        pygame.display.flip()
-
-        # end conditions:
-        vijand = Fight_MainCode.levels[huidige_level]["vijand"]
-        all_dead = isinstance(vijand, list) and all(v.health <= 0 for v in vijand)
-        if not Fight_MainCode.Theseus.alive or all_dead:
-            fight_running = False
-
 def gewonnen(flag):
     flag 
     running = True
@@ -336,7 +295,7 @@ def spelen(): #scherm om te spelen
         
         # Controleer op botsing
         if check_botsing(speler, minotaurus):
-            gevecht_loop()  # Ga naar het game over scherm
+            Fight_MainCode.gevecht()  # Ga naar het game over scherm
             return
        
 
