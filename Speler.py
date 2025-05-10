@@ -109,7 +109,8 @@ class Speler(BewegendObject):
     def beweging(self, map_level):
         if self.damage_timer > 0:
             self.damage_timer -= self.no_damage_time_left/fps   # Decrease the timer
-            
+            if self.damage_timer < 0:
+                self.damage_timer = 0
         if not self.alive:
             return# speler stopt direct wnr hij dood is (dus hp helemaal op)
         
