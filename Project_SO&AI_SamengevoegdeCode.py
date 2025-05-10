@@ -1,8 +1,3 @@
-# modules en initialisaties:  
-import pygame # Pygame bibliotheek laden 
-import sys
-import random
-from Minotaurus_Doolhof import Minotaurus 
 from Speler_Doolhof import *
 from Button_Doolhof import Button
 from Doolhof import *
@@ -54,6 +49,12 @@ botsing_afbeelding = pygame.transform.scale(botsing_afbeelding, (schermbreedte, 
 
 gewonnen_afbeelding = pygame.image.load("YouWon.png")  # Zorg ervoor dat je een afbeelding hebt met deze naam
 gewonnen_afbeelding = pygame.transform.scale(gewonnen_afbeelding, (schermbreedte, schermhoogte))
+
+# Globale variabelen voor het bewaren van de staat van het doolhof
+voormalig_doolhof = None
+voormalige_speler_x = None
+voormalige_speler_y = None
+voormalige_inventory = None
 
 # Hiermee checken we of er een botsing is tussen de speler en de minotaurus: 
 def check_botsing(speler, minotaurus):
@@ -137,6 +138,27 @@ def reset_game():
 
     # Leeg eventueel ook de inventaris van de speler
     speler.inventaris.clear()
+    
+
+
+
+def sla_doolhof_staat_op():
+    global voormalig_doolhof, voormalige_speler_x, voormalige_speler_y, voormalige_inventory
+    voormalig_doolhof = [rij[:] for rij in doolhof]  # Kopie van het doolhof maken
+    voormalige_speler_x = speler.rect.x
+    voormalige_speler_y = speler.rect.y
+    voormalige_inventory = speler.inventaris[:]  # Kopie van de inventaris
+    
+def herstel_doolhof_staat():
+    global doolhof, speler
+    if voormalig_doolhof is not None:
+        doolhof = [rij[:] for rij in voormalig_doolhof]  # Herstel de oude structuur
+        speler.rect.x = voormalige_speler_x  # Zet speler terug op oude positie
+        speler.rect.y = voormalige_speler_y
+        speler.inventaris = voormalige_inventory[:]  # Herstel de inventaris
+
+
+
 def hoofdmenu(): 
     running = True  # Variabele om de loop te controleren
     while running:
@@ -214,7 +236,9 @@ def game_over(flag):
 def gevecht_loop():
     huidige_level = 1
     intro = Fight_MainCode.Intro()
+    
     while True:
+        
         clock.tick(fps)
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
@@ -222,6 +246,8 @@ def gevecht_loop():
             if ev.type == pygame.KEYDOWN and ev.key == pygame.K_p:
                 # skip or end intro
                 intro.finished = True
+                
+        resultaat = Fight_MainCode.game_run(Fight_MainCode.levels)
 
         intro.run(Fight_MainCode.screen)
         if time.time() - intro.anim_start >= intro.anim_duur:
@@ -253,15 +279,13 @@ def gevecht_loop():
         if not Fight_MainCode.Theseus.alive:
             game_over(True)
         
-        if all_dead and Fight_MainCode.Theseus.alive:
-            fight_running = False
+        if resultaat == "gevecht_gewonnen":
+            fight_running = False 
+            pygame.quit
+            herstel_doolhof_staat()  # Breng speler terug naar het doolhof
+            spelen()  # Ga terug naar het doolhof
+            return
             
-            # Reset de speler positie naar waar hij in botsing kwam met de Minotaurus
-            Speler.rect.x = huidige_positie_speler_x
-            Speler.rect.y = huidige_positie_speler_y
-            
-            minotaurus.rect.x = -100  # Of een andere locatie buiten het scherm
-            minotaurus.rect.y = -100
             
 
 def gewonnen(flag):
@@ -348,13 +372,9 @@ def spelen(): #scherm om te spelen
 
         
         if check_botsing(speler, minotaurus):
-            # Sla de huidige positie van de speler op
-            huidige_positie_speler_x = speler.rect.x
-            huidige_positie_speler_y = speler.rect.y
-            
-            # Roep de gevecht_loop functie aan
-            gevecht_loop()  # Ga naar het gevecht
-            return
+            sla_doolhof_staat_op()  # Bewaar de spelstatus
+            gevecht_loop()
+
 
         # Teken alles
         teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie)
