@@ -219,7 +219,7 @@ def gevecht_loop():
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
                 pygame.quit(); sys.exit()
-            if ev.type == pygame.KEYDOWN and ev.key == pygame.K_l:
+            if ev.type == pygame.KEYDOWN and ev.key == pygame.K_p:
                 # skip or end intro
                 intro.finished = True
 
@@ -227,7 +227,7 @@ def gevecht_loop():
         if time.time() - intro.anim_start >= intro.anim_duur:
             intro.displayed = True
             font = pygame.font.SysFont(None, 40)
-            game_over_text = font.render("Press 'l' to start", True, (255, 255, 255))
+            game_over_text = font.render("Press 'P' to start", True, (255, 255, 255))
             text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))
             Fight_MainCode.screen.blit(game_over_text, text_rect)# draws its frames
         if intro.finished:
@@ -249,8 +249,20 @@ def gevecht_loop():
         # end conditions:
         vijand = Fight_MainCode.levels[huidige_level]["vijand"]
         all_dead = isinstance(vijand, list) and all(v.health <= 0 for v in vijand)
-        if not Fight_MainCode.Theseus.alive or all_dead:
+        
+        if not Fight_MainCode.Theseus.alive:
+            game_over(True)
+        
+        if all_dead and Fight_MainCode.Theseus.alive:
             fight_running = False
+            
+            # Reset de speler positie naar waar hij in botsing kwam met de Minotaurus
+            Speler.rect.x = huidige_positie_speler_x
+            Speler.rect.y = huidige_positie_speler_y
+            
+            minotaurus.rect.x = -100  # Of een andere locatie buiten het scherm
+            minotaurus.rect.y = -100
+            
 
 def gewonnen(flag):
     flag 
@@ -335,11 +347,14 @@ def spelen(): #scherm om te spelen
                 draad_cooldowns[draad] -= 1  # Verminder cooldown geleidelijk
 
         
-        # Controleer op botsing
         if check_botsing(speler, minotaurus):
-            gevecht_loop()  # Ga naar het game over scherm
+            # Sla de huidige positie van de speler op
+            huidige_positie_speler_x = speler.rect.x
+            huidige_positie_speler_y = speler.rect.y
+            
+            # Roep de gevecht_loop functie aan
+            gevecht_loop()  # Ga naar het gevecht
             return
-       
 
         # Teken alles
         teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie)
