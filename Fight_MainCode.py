@@ -103,7 +103,7 @@ def game_run(levels):
                 steen.val()
                 steen.draw(screen)
                 #als de speler een steen op zijn hoofd krijgt, dan verliest hij hp
-                if steen.rect.colliderect(Theseus.rect):
+                if steen.rect.colliderect(Theseus.rect) and Theseus.damage_timer == 0:
                     Theseus.health -= 1
                     Theseus.damage_timer = Theseus.no_damage_time_left
         if vijand.health < 1:
@@ -114,6 +114,7 @@ def game_run(levels):
                 
       
     if huidige_level == 2:
+        #if Theseus.rect.bottom < SCREENHEIGHT - 7*tile_grootte:
         if time.time()-start_time_level > 5:
             MinoVolg.draw(screen)
             MinoVolg.beweging(Theseus, niveau2)
@@ -129,12 +130,12 @@ def game_run(levels):
         else:
             Theseus.gewapend = False
         if all(vijand.health <= 0 for vijand in vijanden):
-            pijl = VastObject(800, 7*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
+            pijl = VastObject(800, 5*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
             pijl.draw(screen)
             if Theseus.rect.right == SCREENWIDTH:
                 #huidige_level += 1
                 reset_level()
-                start_time_level = None
+                start_time_level = 0
     Theseus.draw(screen)
     Theseus.beweging(map_data)
     Theseus.draw_healthbar(screen)
@@ -184,8 +185,6 @@ class Intro:
                 pygame.quit()
                 sys.exit()
 
-    
-    
 intro = Intro()
 running = True
 reset_level()
@@ -235,7 +234,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()             
+    pygame.quit()                  
                                   
                                   
                                   
