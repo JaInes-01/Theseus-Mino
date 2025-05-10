@@ -128,11 +128,12 @@ class Minotaurus1(Vijand):
             temp_sprite = pygame.transform.flip(temp_sprite, True, False)
         screen.blit(temp_sprite, self.rect.topleft)
         
-    def draw_healthbar(self, screen):# https://www.youtube.com/watch?v=E82_hdoe06M
-        bar_width = self.basis #even lang als de speler
+    def draw_healthbar(self, screen):
+        bar_width = self.basis  # even lang als de speler
         bar_height = 7
-        x = self.rect.x # x positie gelijk aan de linkerpositie van de speler
-        y = self.rect.y - 10 # bar ligt een beetje boven de speler
-        pygame.draw.rect(screen, (255, 0, 0), (x, y, bar_width, bar_height)) # =rode balk = achtergrond van de healthbar
-        groene_breedte = bar_width * (self.health / self.max_health) #geeft een percentage maal bar widht om te weten hoe groot de groen bar moet zijn
-        pygame.draw.rect(screen, (0, 255, 0), (x, y, groene_breedte, bar_height))
+        x = self.rect.x  # x positie gelijk aan de linkerpositie van de speler
+        y = self.rect.y - 10  # bar ligt een beetje boven de speler
+        pygame.draw.rect(screen, (255, 0, 0), (x, y, bar_width, bar_height))  # Rode balk = achtergrond van de healthbar
+        groene_breedte = bar_width * (self.health / self.max_health)  # Percentage maal bar width om te weten hoe groot de groene bar moet zijn
+        pygame.draw.rect(screen, (0, 255, 0), (x, y, groene_breedte, bar_height))  # Groene balk = huidige gezondheid
+
