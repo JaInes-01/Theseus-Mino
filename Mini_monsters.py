@@ -24,14 +24,22 @@ class Mini_monsters(Minotaurus1):
         
         
     def attack(self, speler):
+        
+        #wanneer de speler een level heeft voltooid willen we niet dat hij nog aangevald kan worden
         if speler.level_voltooid:
             return
+        #aanvallen gebeuren wanneer de speler levend is en wanneer er een collisie is onder bepaalde vw
+        #we willen niet dat geneutraliseerde vijanden nog kunnen aanvallen
         if speler.alive and self.rect.colliderect(speler.rect) and self.health > 0:
+            
+            
             horizonaanval = abs(speler.rect.centerx - self.rect.centerx) <= 10
             bovenaanval = speler.vy > 0 and speler.rect.bottom <= self.rect.top + 20
             print("bovenaanval:", bovenaanval, "enemy shield:", self.damage_timer)
+            
+            #zelfde aanval als level1
             if bovenaanval:
-                #als de onkwetsbaarheid van de vijand nog actief is
+                #als de speler aanvalt en de onkwetsbaarheid van de vijand nog actief is dan verliest de speler hp 
                 if self.damage_timer > 0:
                     speler.health -= 1 
                     self.push(speler)
@@ -43,32 +51,29 @@ class Mini_monsters(Minotaurus1):
                     self.damage_timer = self.no_damage_time_left
                     speler.damage_timer = speler.no_damage_time_left
                     print("Enemy hit! New HP:", self.health)
+            
+            #nieuwe aanval op de vijand: langs de zijkant als m gedrukt wordt en als speler gewapend is
             elif horizonaanval:
-                #De attack is zoals voor Minotaurus1 maar met 1 extra attack op de vijand
-                #indien speler gewapend: collisie met vijand + op m drukken => vijand verliest hp
                 print("Speler shield:", speler.damage_timer) 
                 keys = pygame.key.get_pressed()
                 #speler gewapend + k => vijand verliest hp
                 if speler.m_pressed and speler.gewapend:
-                        # Enemy takes damage
                     self.health -= 1
                     self.push(speler)
                     speler.damage_timer = speler.no_damage_time_left
                     print("Side attack! Enemy HP:", self.health)
                     
-                #speler gewapend maar geen m => speler verliest hp
+                #speler gewapend maar m niet gedrukt => speler verliest hp
                 else:
-                    # Player takes damage
-                    speler.health -= 1
-                    speler.damage_timer = speler.no_damage_time_left
-                    self.push(speler)
-                    print("Player hit! New Player HP:", speler.health)
+                    if speler.damage_timer == 0:
+                        speler.health -= 1
+                        self.push(speler)
+                        speler.damage_timer = speler.no_damage_time_left
+                        print("Player hit! New Player HP:", speler.health)
                 
-                    
+        
             if speler.health <= 0:
                 speler.alive = False
-                self.vertraag_duur = 1000
-                self.vertraag()
                 print("GAME OVER")
             
     def beweging(self, speler, map_level, screen):
@@ -81,4 +86,5 @@ class Mini_monsters(Minotaurus1):
        
         if self.damage_timer > 0:
             self.damage_timer -= self.no_damage_time_left/fps
-    
+            if self.damage_timer < 0:
+                self.damage_timer = 0
