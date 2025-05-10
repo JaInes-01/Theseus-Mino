@@ -148,7 +148,8 @@ def game_run(levels):
         screen.blit(play_again_text, text_rect)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_r]:
-            reset_level()
+            huidige_level = 1
+            reset_level() 
     
 class Intro:
     def __init__(self):
