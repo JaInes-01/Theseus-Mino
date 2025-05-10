@@ -1,6 +1,6 @@
 import pygame 
 import time 
-from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT
+from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT, fps
  
 class Vijand(BewegendObject):
     def __init__(self, x, y, snelheid, basis, hoogte, sprite_png, speler, map_level):
