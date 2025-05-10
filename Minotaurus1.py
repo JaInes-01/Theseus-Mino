@@ -36,7 +36,7 @@ class Minotaurus1(Vijand):
     def attack(self, speler):
         if speler.level_voltooid:
             return
-        if speler.alive and self.rect.colliderect(speler.rect):
+        if speler.alive and self.rect.colliderect(speler.rect) and self.health > 0:
             bovenaanval = speler.vy > 0 and speler.rect.bottom <= self.rect.top + 5
             
             #De healthbar van de vijand daalt wanneer de speler op zijn hoofd springt
