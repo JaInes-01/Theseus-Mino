@@ -11,6 +11,7 @@ from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_ve
 from Mini_monsters import Mini_monsters
 from Vallende_steen import Vallende_steen, vallende_stenen, laatste_val, val_interval
 from MinotaurusVolg import MinotaurusVolg
+
 background = pygame.image.load("background_fight.png")
 background = pygame.transform.scale(background, (SCREENWIDTH, SCREENHEIGHT))
 intro_background = pygame.image.load("intro_fight.png")
@@ -226,91 +227,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()
-                         
-                                  
-    
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
+    pygame.quit()         
                                   
                                   
                                   
