@@ -10,7 +10,7 @@ from Minotaurus1 import Minotaurus1
 from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2, map_niv3
 from Mini_monsters import Mini_monsters
 from Vallende_steen import Vallende_steen, vallende_stenen, laatste_val, val_interval
-
+from MinotaurusVolg import MinotaurusVolg
 background = pygame.image.load("background_fight.png")
 background = pygame.transform.scale(background, (SCREENWIDTH, SCREENHEIGHT))
 intro_background = pygame.image.load("intro_fight.png")
@@ -19,8 +19,6 @@ pygame.init()
 screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 clock = pygame.time.Clock()
 fps = 30
-
-
 
 niveau1 = Map(map_niv1)
 niveau2 = Map(map_niv2)
@@ -38,8 +36,9 @@ levels = {1:{"map": niveau1}, 2:{"map": niveau2}}
 huidige_level = 1
 vijanden = []
 
+start_time_level = None
 def reset_level():
-    global vijanden, Theseus, Zwaard
+    global vijanden, Theseus, Zwaard, MinoVolg
     map_data = levels[huidige_level]["map"]
     Zwaard = VastObject(tile_grootte, 7*tile_grootte, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "zwaard2.png")
     if huidige_level == 1:
@@ -48,17 +47,20 @@ def reset_level():
         levels[huidige_level]["vijand"] = Mino1
     
     if huidige_level == 2:
+        global start_time_level, MinoVolg
+        start_time_level = time.time()
         Theseus = Speler(20, 500, 5, 1/30, 1/30, "speler.png", map_data, Zwaard)
         Mini1 = Mini_monsters(4*tile_grootte, 2*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
         Mini2 = Mini_monsters(11*tile_grootte, 2*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
         Mini3 = Mini_monsters(17*tile_grootte, 6*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
+        MinoVolg= MinotaurusVolg(0, 500, 6, 1/10, 1/10, "Minotaurus.png", Theseus, niveau2)
         levels[huidige_level]["vijand"] = [Mini1, Mini2, Mini3]
     
     
         
 
 def game_run(levels):
-    global huidige_level, laatste_val
+    global huidige_level, laatste_val, start_time_level
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -92,15 +94,24 @@ def game_run(levels):
             for steen in vallende_stenen:
                 steen.val()
                 steen.draw(screen)
+                #als de speler een steen op zijn hoofd krijgt, dan verliest hij hp
                 if steen.rect.colliderect(Theseus.rect):
-                    Theseus.health -=1
+                    Theseus.health -= 1
+                    Theseus.damage_timer = Theseus.no_damage_time_left
         if vijand.health < 1:
             pijl.draw(screen)
             if Theseus.rect.right == SCREENWIDTH:
                 huidige_level += 1
                 reset_level()
                 
+      
     if huidige_level == 2:
+        if time.time()-start_time_level > 5:
+            MinoVolg.draw(screen)
+            MinoVolg.beweging(Theseus, niveau2)
+            if Theseus.rect.colliderect(MinoVolg.rect):
+                Theseus.alive = False
+            
         Zwaard.draw(screen) 
         if Theseus.rect.colliderect(Zwaard.rect):
             Theseus.inventory.append(Zwaard)
@@ -115,7 +126,7 @@ def game_run(levels):
             if Theseus.rect.right == SCREENWIDTH:
                 huidige_level += 1
                 reset_level()
-                
+                start_time_level = None
     Theseus.draw(screen)
     Theseus.beweging(map_data)
     Theseus.draw_healthbar(screen)
@@ -206,14 +217,8 @@ def gevecht():
             if keys[pygame.K_l]:  # Proceed to the game when 'L' is pressed
                 screen.blit(background, (0, 0))
                 intro.finished = True
-        
-        
-                
         if intro.finished:
             game_run(levels)
-
-        
-            
 
         pygame.display.flip()
 if __name__ == "__main__":
