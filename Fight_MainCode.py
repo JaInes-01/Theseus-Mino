@@ -5,9 +5,16 @@ import math
 from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT
 from Speler import Speler 
 from Vijand import Vijand
+import pygame
+import sys
+import time
+import math 
+from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT
+from Speler import Speler 
+from Vijand import Vijand
 from Minotaurus1 import Minotaurus1
 #from Minotaurus2 import Minotaurus2
-from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2, map_niv3
+from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2
 from Mini_monsters import Mini_monsters
 from Vallende_steen import Vallende_steen, vallende_stenen, laatste_val, val_interval
 from MinotaurusVolg import MinotaurusVolg
@@ -23,12 +30,12 @@ fps = 30
 
 niveau1 = Map(map_niv1)
 niveau2 = Map(map_niv2)
-niveau3 = Map(map_niv3)
+#niveau3 = Map(map_niv3)
 
 
 
 #LEVEL3
-stenen = pygame.sprite.Group()
+#stenen = pygame.sprite.Group()
 #Mino2 = Minotaurus2(700, 550, 6 , 1/10, 1/10, "Minotaurus.png", Theseus, niveau1, stenen)
 
 #we maken een dictionary aan van alle levels, met hun map, objecten en vijand
@@ -125,7 +132,7 @@ def game_run(levels):
             pijl = VastObject(800, 7*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
             pijl.draw(screen)
             if Theseus.rect.right == SCREENWIDTH:
-                huidige_level += 1
+                #huidige_level += 1
                 reset_level()
                 start_time_level = None
     Theseus.draw(screen)
@@ -228,7 +235,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()         
+    pygame.quit()             
                                   
                                   
                                   
