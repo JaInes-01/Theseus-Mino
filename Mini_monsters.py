@@ -26,7 +26,7 @@ class Mini_monsters(Minotaurus1):
     def attack(self, speler):
         if speler.level_voltooid:
             return
-        if speler.alive and self.rect.colliderect(speler.rect) and self > 0:
+        if speler.alive and self.rect.colliderect(speler.rect) and self.health > 0:
             horizonaanval = abs(speler.rect.centerx - self.rect.centerx) <= 10
             bovenaanval = speler.vy > 0 and speler.rect.bottom <= self.rect.top + 20
             print("bovenaanval:", bovenaanval, "enemy shield:", self.damage_timer)
