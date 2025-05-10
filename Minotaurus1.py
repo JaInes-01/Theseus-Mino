@@ -1,6 +1,8 @@
 import pygame
 import time
-from Vijand import Vijand, SCREENWIDTH, SCREENHEIGHT
+clock = pygame.time.Clock()
+from Vijand import Vijand, SCREENWIDTH, SCREENHEIGHT, fps
+
 
 class Minotaurus1(Vijand):
     def __init__(self, x, y, snelheid, basis, hoogte, sprite_png, speler, map_level):
@@ -14,8 +16,10 @@ class Minotaurus1(Vijand):
         self.max_health = 6 #max aantal levens is 3 
         self.health = self.max_health
         self.alive = True 
-        self.damage_timer = 0 
-        self.no_damage_time_left = 1000
+        
+        self.damage_timer = 0 #wachttijd tss schade (dus tijd die nog moet aftellen)
+        self.no_damage_time_left = 1000 #speler is tijdens 1 sec onkwetsbaar nadat hij geraakt werd
+        
         self.versnelling = 4
         self.nodige_health = 0
         
@@ -24,24 +28,30 @@ class Minotaurus1(Vijand):
         speler.push_start = time.time()
         #de push moet in dezelde richting van de beweging van de vijand gebeuren
         richting = -1 if self.rect.centerx > speler.rect.centerx else 1
-        speler.vx = richting*speler.snelheid
+        #speler.vx = richting*speler.snelheid
         speler.vy = (-speler.spring_hoogte)/2
         speler.op_grond = False
-        
     
+        
     def attack(self, speler):
+        if speler.level_voltooid:
+            return
         if speler.alive and self.rect.colliderect(speler.rect):
             bovenaanval = speler.vy > 0 and speler.rect.bottom <= self.rect.top + 5
             #De healthbar van de vijand daalt wanneer de speler op zijn hoofd springt
             if bovenaanval:
-                self.health -= 1
-                self.push(speler)
-                print("Enemy hit! New HP:", self.health)
-
+                if self.damage_timer > 0:
+                    speler.health -= 1 
+                    speler.damage_timer = speler.no_damage_time_left
+                else:
+                    self.health -= 1
+                    self.push(speler)
+                    self.damage_timer = self.no_damage_time_left
+                    print("Enemy hit! New HP:", self.health)
             else:
-                if not speler.schild:
+                if speler.damage_timer <= 0:
                     speler.health -= 1
-                    speler.schild_aan()
+                    speler.damage_timer = speler.no_damage_time_left
                     self.push(speler)
                 else:
                     pass
@@ -95,20 +105,19 @@ class Minotaurus1(Vijand):
                 self.vx = self.snelheid 
                 self.versnel()
                 
-        tijdsverschil_schild = time.time()-self.schild_start  
-        if self.schild and tijdsverschil_schild > self.schild_duur:
-            self.schild = False
+        if self.damage_timer > 0:
+            self.damage_timer -= self.no_damage_time_left/fps   # Decrease the timer
+            
         #voor de overgang naar de tweede level zal de minotaurus even verdoofd zijn
         
         if self.health < 1:
             self.vertraag()
             
-            
     def draw(self, screen):
     # Start with a clean, untinted copy of the sprite
         temp_sprite = self.sprite.copy()
 
-        if self.schild:
+        if self.damage_timer > 0:
             tint = pygame.Surface(temp_sprite.get_size(), pygame.SRCALPHA)
             tint.fill((100, 0, 0, 80))  # Cyan-ish tint with transparency
             temp_sprite.blit(tint, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
