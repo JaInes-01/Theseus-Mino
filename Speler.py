@@ -1,7 +1,7 @@
 import pygame
 import time
 clock = pygame.time.Clock()
-from Objecten import BewegendObject, SCREENWIDTH, SCREENHEIGHT
+from Objecten import BewegendObject, SCREENWIDTH, SCREENHEIGHT, fps
 
 
 class Speler(BewegendObject):
@@ -24,14 +24,15 @@ class Speler(BewegendObject):
         self.health = self.max_health
         self.alive = True #om te weten of het game over is of niet
         
-        self.schild = False
-        self.schild_start = 0
-        self.schild_duur = 2
-        
         self.damage_timer = 0 #wachttijd tss schade (dus tijd die nog moet aftellen)
-        self.no_damage_time_left = 1000 #speler is tijdens 1 sec onkwetsbaar nadat hij geraakt werd
+        self.no_damage_time_left = 2 #speler is tijdens 1 sec onkwetsbaar nadat hij geraakt werd
+        
         self.nodige_points = 9
         self.gewapend = False
+        self.m_pressed = False 
+        self.K_RIGHT = False
+        self.K_LEFT = False
+        self.level_voltooid = False 
         
     def horizontaal(self):
         vx = 0
@@ -53,11 +54,8 @@ class Speler(BewegendObject):
         
     def zwaartekracht(self):
         self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
-        
-    def schild_aan(self):
-        self.schild = True
-        self.schild_start = time.time()
-        
+    
+    
     def zwaard(self, zwaard):
         if self.rect.colliderect(zwaard.rect):
            zwaard.sprite.set_alpha(0)
@@ -96,11 +94,13 @@ class Speler(BewegendObject):
    
     
     def beweging(self, map_level):
-        
+        if self.damage_timer > 0:
+            self.damage_timer -= self.no_damage_time_left/fps   # Decrease the timer
+            
+        print(f"Damage Timer: {self.damage_timer}")
         if not self.alive:
             return# speler stopt direct wnr hij dood is (dus hp helemaal op)
-        if self.damage_timer > 0:#controleer of de speler nog kwetsbaar is als groter dan 0 dan is speler nog steeds onkwetsbaar
-            self.damage_timer -= clock.get_time()#https://www.pygame.org/docs/ref/time.html (clock.get_time() geeft hvl milisecondes zijn voorbij gegaan sinds de vorige frame) dit toont hoe lang nog de speler onkwetsbaar is
+        
  
         if self.pushed:
             if time.time() - self.push_start > self.push_duur:
@@ -108,18 +108,14 @@ class Speler(BewegendObject):
                 self.vx = 0
         else: 
             self.vx = self.horizontaal()
-            
-        tijdsverschil_schild = time.time()-self.schild_start  
-        if self.schild and tijdsverschil_schild > self.schild_duur:
-            self.schild = False
-            
-        
+              
         self.sprong()
         vx = self.collisie_x(self.vx, map_level)
         self.move(vx, 0)
         vy = self.collisie_y(map_level)
         self.move(0,vy)
         
+            
         #ervoor zorgen dat speler niet uit de scherm komt
         if self.rect.left < 0: 
             self.rect.left = 0
@@ -127,6 +123,12 @@ class Speler(BewegendObject):
             self.rect.right = SCREENWIDTH 
             
     def draw(self, screen):
+        
+        if self.damage_timer > 0:
+        # Flash effect: only draw every 100 ms
+            if (pygame.time.get_ticks() // 100) % 2 == 0:
+                return  # skip drawing this frame
+        
         if self.facing_left:
             flipped_sprite = pygame.transform.flip(self.sprite, True, False) #enkel horizontaal flippen
             screen.blit(flipped_sprite, self.rect.topleft)
