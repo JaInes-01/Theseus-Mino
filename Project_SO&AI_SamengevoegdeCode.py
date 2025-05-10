@@ -8,7 +8,8 @@ from Button_Doolhof import Button
 from Doolhof import *
 from Teleporteren_Doolhof import teleport_speler
 import time 
-import Fight_MainCode 
+import Fight_MainCode
+from Objecten import * 
 
 # Vervolgens initialiseren we pygame: 
 pygame.init() 
@@ -34,7 +35,7 @@ start_x_speler = 0
 start_y_speler = 1
 
 # We definiëren de speler met de Speler() functie uit de Speler_Doolhof module. Ook hier hebben we als input de startpositie van de speler genomen, het png-bestand, 
-speler = Speler(start_x_speler * blokjesgrootte , start_y_speler * blokjesgrootte , 'speler.png', 22, 22, 5, 5) 
+speler = Speler_Doolhof(start_x_speler * blokjesgrootte , start_y_speler * blokjesgrootte , 'speler.png', 22, 22, 5, 5) 
 #--> beginpositie wordt bepaald door start_x en start_y te verm met de blokjesgrootte om de speler op de jusite plek in het doolhof te krijgen (dus als start_x = 1 en blokjesgrootte = 30, dan start de speler op 30 pixels van de linkerrand), speler.png geeft de bestandsnaam voor de afbeelding van de speler --> deze wordt door 24, 24 geschaald naar 24 op 24 pixels; 5, 5 geeft de snelheid van de speler aan (dus de speler beweegt telkens 5 pixels als er op de pijltjes degrukt wordt)
 
 # We initiëren cooldowns, zodat de speler niet meteen kan teleporteren (om spel moeilijker te maken)
@@ -69,7 +70,7 @@ def check_item_opname(speler):
     deur_frames = [pygame.transform.scale(pygame.image.load(f"deur{i}.png"), (200, 300)) for i in range(1, 8)]  # Voor de animatie van de deur
     
     # Controleer of de speler de schatkist oppakt:
-    if speler_locatie == Doolhof.sleutel_locatie: #als de locatie van de speler en de sleutel gelijk is aan elkaar dan,
+    if speler_locatie == sleutel_locatie: #als de locatie van de speler en de sleutel gelijk is aan elkaar dan,
         speler.pak_item("sleutel") #pakt de speler het item op en voegt deze toe aan zijn inventaris mbv pak_item()
         
         doolhof[23][32] = ' ' # hierdoor wordt de uitgang zichtbaar eens de speler de sleutel te pakken heeft
@@ -79,11 +80,11 @@ def check_item_opname(speler):
         Uitgang_open_rect = Uitgang_open_tekst.get_rect(center=(500, 500))
         
         # sleutel_locatie = None # De sleutel is opgepakt, dus verwijder de sleutel van het scherm (er is geen locatie meer)
-        Doolhof.sleutel_locatie = None
+        sleutel_locatie = None
         
         # om de deuren te laten verschijnen doen we dit met een for-loop:
         for frame in deur_frames:
-            teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, Doolhof.sleutel_locatie) # we tekenen eerst nog eens het doolhof en de speler zodat we gaan bruin scherm als achtergrond hebben
+            teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie) # we tekenen eerst nog eens het doolhof en de speler zodat we gaan bruin scherm als achtergrond hebben
             speler.draw(scherm)
             scherm.blit(frame, (400, 150))  # Teken het frame van de deuranimatie op positie (400, 150)
             scherm.blit(Uitgang_open_tekst, Uitgang_open_rect)  # hiermee tekenen we de tekst op het scherm
@@ -131,7 +132,7 @@ def reset_game():
     minotaurus.rect.x = start_x_vijand * blokjesgrootte  # Set minotaur X position
     minotaurus.rect.y = start_y_vijand * blokjesgrootte  # Set minotaur Y position
     # Reset sleutel en uitgang
-    Doolhof.sleutel_locatie = (9, 17)  # of waar je de sleutel oorspronkelijk had
+    sleutel_locatie = (9, 17)  # of waar je de sleutel oorspronkelijk had
     doolhof[23][32] = 'X'  # Zorg dat dit de originele waarde is vóórdat de uitgang zichtbaar werd
 
     # Leeg eventueel ook de inventaris van de speler
@@ -209,6 +210,47 @@ def game_over(flag):
                     return  # Exit the function
         
         pygame.display.update()  # Scherm bijwerken na elke frame
+
+def gevecht_loop():
+    huidige_level = 1
+    intro = Fight_MainCode.Intro()
+    while True:
+        clock.tick(fps)
+        for ev in pygame.event.get():
+            if ev.type == pygame.QUIT:
+                pygame.quit(); sys.exit()
+            if ev.type == pygame.KEYDOWN and ev.key == pygame.K_l:
+                # skip or end intro
+                intro.finished = True
+
+        intro.run(Fight_MainCode.screen)
+        if time.time() - intro.anim_start >= intro.anim_duur:
+            intro.displayed = True
+            font = pygame.font.SysFont(None, 40)
+            game_over_text = font.render("Press 'l' to start", True, (255, 255, 255))
+            text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))
+            Fight_MainCode.screen.blit(game_over_text, text_rect)# draws its frames
+        if intro.finished:
+            break        # exit intro loop
+        pygame.display.flip()
+
+    # --- 2) ACTUAL FIGHT ---
+    Fight_MainCode.reset_level()
+    fight_running = True
+    while fight_running:
+        clock.tick(fps)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit(); sys.exit()
+        # draw fight frame
+        Fight_MainCode.game_run(Fight_MainCode.levels)
+        pygame.display.flip()
+
+        # end conditions:
+        vijand = Fight_MainCode.levels[huidige_level]["vijand"]
+        all_dead = isinstance(vijand, list) and all(v.health <= 0 for v in vijand)
+        if not Fight_MainCode.Theseus.alive or all_dead:
+            fight_running = False
 
 def gewonnen(flag):
     flag 
@@ -295,12 +337,12 @@ def spelen(): #scherm om te spelen
         
         # Controleer op botsing
         if check_botsing(speler, minotaurus):
-            Fight_MainCode.gevecht()  # Ga naar het game over scherm
+            gevecht_loop()  # Ga naar het game over scherm
             return
        
 
         # Teken alles
-        teken_doolhof()
+        teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie)
         speler.draw(scherm)
         minotaurus.draw(scherm)
         # Controleer of het spel gesloten moet worden (heb ik ook uit de les gehaald vlgm laatste WPO)
