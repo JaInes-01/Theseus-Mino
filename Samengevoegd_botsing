@@ -272,6 +272,22 @@ def gewonnen(flag):
         
         pygame.display.update()  # Scherm bijwerken na elke frame
 
+
+def gevecht_loop():
+    Fight_MainCode.gevecht()
+    resultaat = Fight_MainCode.game_run(Fight_MainCode.levels )
+        
+    if not Fight_MainCode.Theseus.alive:
+        game_over(True)
+        
+    if resultaat == "gevecht_gewonnen":
+        fight_running = False 
+        pygame.quit
+        herstel_doolhof_staat()  # Breng speler terug naar het doolhof
+        spelen()  # Ga terug naar het doolhof
+        return
+
+
 def spelen(): #scherm om te spelen
     global doolhof, moeilijkheid
     running = True
@@ -321,7 +337,8 @@ def spelen(): #scherm om te spelen
 
         
         if check_botsing(speler, minotaurus):
-            Fight_MainCode.gevecht()
+            sla_doolhof_staat_op()  # Bewaar de spelstatus
+            gevecht_loop()
            
                 
 
