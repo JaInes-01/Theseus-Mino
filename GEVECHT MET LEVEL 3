@@ -6,12 +6,10 @@ from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT
 from Speler import Speler 
 from Vijand import Vijand
 from Minotaurus1 import Minotaurus1, Vallende_steen, vallende_stenen, laatste_val, val_interval
-#from Minotaurus2 import Minotaurus2
-from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2, map_niv3
+from Minotaurus2 import Minotaurus2
 from Mini_monsters import Mini_monsters
-
-from MinotaurusVolg import MinotaurusVolg
 from Minotaurus3 import Minotaurus3, Steen, stenen
+from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2, map_niv3
 
 background = pygame.image.load("background_fight.png")
 background = pygame.transform.scale(background, (SCREENWIDTH, SCREENHEIGHT))
@@ -53,13 +51,13 @@ def reset_level():
         Mini1 = Mini_monsters(4*tile_grootte, 2*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
         Mini2 = Mini_monsters(11*tile_grootte, 2*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
         Mini3 = Mini_monsters(17*tile_grootte, 6*tile_grootte, 2, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "Monster.png", Theseus, niveau2)
-        MinoVolg= MinotaurusVolg(0, 500, 6, 1/10, 1/10, "Minotaurus.png", Theseus, niveau2)
+        Mino2 = Minotaurus2(0, 500, 6, 1/10, 1/10, "Minotaurus.png", Theseus, niveau2)
         levels[huidige_level]["vijand"] = [Mini1, Mini2, Mini3]
     
     
     if huidige_level == 2:
         Theseus = Speler(20, 500, 5, 1/30, 1/30, "speler.png", map_data, Zwaard)
-        Mino3 = Minotaurus3(800, 550, 4, 1/10, 1/10, "Minotaurus.png", Theseus, niveau3)
+        Mino3 = Minotaurus3(800, 550, 4, 1/10, 1/10, "Minotaurus.png", Theseus, niveau3, stenen)
         levels[huidige_level]["vijand"] = [Mino3]
         
 def game_run(levels):
