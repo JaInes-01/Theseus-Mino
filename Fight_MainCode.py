@@ -11,7 +11,7 @@ from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_ve
 from Mini_monsters import Mini_monsters
 from Vallende_steen import Vallende_steen, vallende_stenen, laatste_val, val_interval
 from MinotaurusVolg import MinotaurusVolg
-from Samengevoegde_Code import gevecht_gewonnen
+from Gewonnen import * 
 
 
 
@@ -124,8 +124,7 @@ def game_run(levels):
             Theseus.gewapend = False
         
         if all(vijand.health <= 0 for vijand in vijanden):  # Controleer of alle vijanden in level 2 verslagen zijn
-            gevecht_gewonnen = True  # Toon de "YOU WON" boodschap
-            return
+            return gewonnen(True)
                 
     Theseus.draw(screen)
     Theseus.beweging(map_data)
@@ -135,19 +134,7 @@ def game_run(levels):
         Theseus.alive = False 
     
     if not Theseus.alive:
-        screen.fill((0, 0, 0))
-        font = pygame.font.SysFont(None, 80)
-        game_over_text = font.render("GAME OVER", True, (255, 0, 0))
-        text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))
-        screen.blit(game_over_text, text_rect)
-        font = pygame.font.SysFont(None, 40)
-        play_again_text = font.render("press 'r' to play again", True, (255, 255, 255))
-        text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 4))
-        screen.blit(play_again_text, text_rect)
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_r]:
-            huidige_level = 1
-            reset_level() 
+        return game_over(True)
             
     #if huidige_level == 3:
         #als de speler level 3 wint dan wordt een flag ingevoerd die zegt dat hij het gevecht heeft gewonnen
@@ -236,4 +223,4 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()     
+    pygame.quit()       
