@@ -24,7 +24,7 @@ class Vijand(BewegendObject):
             future_x = pygame.Rect(self.rect.x + self.vx, self.rect.y, self.basis, self.hoogte)
             if tile.rect.colliderect(future_x):
                 if self.vx > 0:
-                   vx = tile.rect.left - self.rect.right #dx blijft dalen naarmate dat de speler dichter komt, totdat dx nul wordt
+                   vx = tile.rect.left - self.rect.right #vx blijft dalen naarmate dat de speler dichterbij komt, totdat die nul wordt
                 elif vx < 0:
                     vx = tile.rect.right - self.rect.left
                     
