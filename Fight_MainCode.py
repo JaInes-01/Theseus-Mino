@@ -5,13 +5,6 @@ import math
 from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT
 from Speler import Speler 
 from Vijand import Vijand
-import pygame
-import sys
-import time
-import math 
-from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT
-from Speler import Speler 
-from Vijand import Vijand
 from Minotaurus1 import Minotaurus1
 #from Minotaurus2 import Minotaurus2
 from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2
@@ -42,6 +35,7 @@ niveau2 = Map(map_niv2)
 levels = {1:{"map": niveau1}, 2:{"map": niveau2}}
 
 huidige_level = 1
+gevecht_gewonnen = False
 vijanden = []
 
 start_time_level = None
@@ -68,7 +62,7 @@ def reset_level():
         
 
 def game_run(levels):
-    global huidige_level, laatste_val, start_time_level
+    global huidige_level, gevecht_gewonnen, laatste_val, start_time_level
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -103,7 +97,7 @@ def game_run(levels):
                 steen.val()
                 steen.draw(screen)
                 #als de speler een steen op zijn hoofd krijgt, dan verliest hij hp
-                if steen.rect.colliderect(Theseus.rect):
+                if steen.rect.colliderect(Theseus.rect) and Theseus.damage_timer == 0:
                     Theseus.health -= 1
                     Theseus.damage_timer = Theseus.no_damage_time_left
         if vijand.health < 1:
@@ -114,6 +108,7 @@ def game_run(levels):
                 
       
     if huidige_level == 2:
+        #if Theseus.rect.bottom < SCREENHEIGHT - 7*tile_grootte:
         if time.time()-start_time_level > 5:
             MinoVolg.draw(screen)
             MinoVolg.beweging(Theseus, niveau2)
@@ -128,11 +123,14 @@ def game_run(levels):
             Theseus.gewapend = True 
         else:
             Theseus.gewapend = False
-            
         if all(vijand.health <= 0 for vijand in vijanden):
-            pygame.quit
-            return "gevecht_gewonnen"
-            
+            pijl = VastObject(800, 5*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
+            pijl.draw(screen)
+            if Theseus.rect.right == SCREENWIDTH:
+                #huidige_level += 1
+                #reset_level()
+                #start_time_level = 0
+                gevecht_gewonnen = True
     Theseus.draw(screen)
     Theseus.beweging(map_data)
     Theseus.draw_healthbar(screen)
@@ -155,6 +153,11 @@ def game_run(levels):
         if keys[pygame.K_r]:
             huidige_level = 1
             reset_level() 
+            
+    #if huidige_level == 3:
+        #als de speler level 3 wint dan wordt een flag ingevoerd die zegt dat hij het gevecht heeft gewonnen
+        #if vijand.health < 1 and Theseus.health > 0:
+            #gevecht_gewonnen = True 
     
 class Intro:
     def __init__(self):
@@ -182,22 +185,21 @@ class Intro:
                 pygame.quit()
                 sys.exit()
 
-    
-    
 intro = Intro()
 running = True
 reset_level()
 
 def gevecht():
+    intro = Intro()
     running = True
     reset_level()
-
+    game_started = False
+    
     while running:
         clock.tick(fps)
         # Handle quit events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -214,23 +216,29 @@ def gevecht():
             intro.run(screen)
             if time.time() - intro.anim_start >= intro.anim_duur:
                 intro.displayed = True
+                print('intro_displayed')
                 font = pygame.font.SysFont(None, 40)
-                game_over_text = font.render("Press 'l' to start", True, (255, 255, 255))
+                game_over_text = font.render("Press 'p' to start", True, (255, 255, 255))
                 text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))
                 screen.blit(game_over_text, text_rect)
 
         elif intro.displayed and not intro.finished:
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_l]:  # Proceed to the game when 'L' is pressed
+            if keys[pygame.K_p]:  # Proceed to the game when 'p' is pressed
                 screen.blit(background, (0, 0))
                 intro.finished = True
+                print('intro_finished')
+                
         if intro.finished:
             game_run(levels)
-
+            
+    
+        #we geven een return value aan de gevecht functie die aangeeft of de speler gewonnen had of verloren voordat hij het gevecht ver
         pygame.display.flip()
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()         
+    pygame.quit()     
+                   
