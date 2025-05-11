@@ -182,7 +182,7 @@ class Vallende_steen(BewegendObject):
      
     #steen naar beneden te laten vallen
     def val(self):
-        self.vy += self.Fzv# zwaartekracht verhoogt de snelheid elke frame
+        self.vy += self.Fz# zwaartekracht verhoogt de snelheid elke frame
         self.move(0,self.vy)# verplaats de steen verticaal naar beneden volgens huidige snelheid
 
 
