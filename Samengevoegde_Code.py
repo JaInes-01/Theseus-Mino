@@ -10,6 +10,8 @@ from Teleporteren_Doolhof import teleport_speler
 import time 
 import Fight_MainCode
 from Objecten import * 
+from Gewonnen import * 
+
 
 
 # Vervolgens initialiseren we pygame: 
@@ -55,6 +57,9 @@ botsing_afbeelding = pygame.transform.scale(botsing_afbeelding, (schermbreedte, 
 
 gewonnen_afbeelding = pygame.image.load("YouWon.png")  # Zorg ervoor dat je een afbeelding hebt met deze naam
 gewonnen_afbeelding = pygame.transform.scale(gewonnen_afbeelding, (schermbreedte, schermhoogte))
+
+info_afbeelding = pygame.image.load("info_scherm.png")  # Jouw info-PNG
+info_afbeelding = pygame.transform.scale(info_afbeelding, (schermbreedte, schermhoogte))
 
 # Globale variabelen voor het bewaren van de staat van het doolhof
 voormalig_doolhof = None
@@ -127,7 +132,6 @@ def starten_met_moeilijkheid(moeilijkheidsgraad):
 
     game_over(False)
     gewonnen(False)
-    terug_naar_doolhof()
     reset_game()
     spelen()
 
@@ -149,37 +153,24 @@ def reset_game():
 
     # Leeg eventueel ook de inventaris van de speler
     speler.inventaris.clear()
-    
 
-
-
-def sla_doolhof_staat_op():
-    global voormalig_doolhof, voormalige_speler_x, voormalige_speler_y, voormalige_inventory
-    voormalig_doolhof = [rij[:] for rij in doolhof]  # Kopie van het doolhof maken
-    voormalige_speler_x = speler.rect.x
-    voormalige_speler_y = speler.rect.y
-    voormalige_inventory = speler.inventaris[:]  # Kopie van de inventaris
-
-def herstel_doolhof_staat():
-    global doolhof, speler
-    if voormalig_doolhof is not None:
-        doolhof = [rij[:] for rij in voormalig_doolhof]  # Herstel de oude structuur
-        speler.rect.x = voormalige_speler_x  # Zet speler terug op oude positie
-        speler.rect.y = voormalige_speler_y
-        speler.inventaris = voormalige_inventory[:]  # Herstel de inventaris
-        
-def terug_naar_doolhof():
-    global minotaurus_verslagen
-    minotaurus_verslagen = True  # Minotaurus is verslagen, dus verwijder hem
-    
-    herstel_doolhof_staat()  # Zet de speler terug op de juiste plek en herstel het doolhof
-    
-    spelen()  # Start opnieuw het doolhof zonder de minotaurus
-
-
+def toon_info_scherm():
+    running = True
+    while running:
+        scherm.blit(info_afbeelding, (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # ESC = terug naar hoofdmenu
+                    running = False
+        pygame.display.update()
 
 def hoofdmenu(): 
     running = True  # Variabele om de loop te controleren
+    info_button = Button(button_surface, (120, 750), "INFO", get_font(50), 'Blue', 'White')
+    
     while running:
         scherm.blit(achtergrond_afbeelding, (0, 0))  # Teken de afbeelding op positie (0, 0)
 
@@ -196,7 +187,7 @@ def hoofdmenu():
 
         scherm.blit(Menu_tekst, Menu_rect)
 
-        for button in [EASY_button, MEDIUM_button, HARD_button, EXIT_button]:
+        for button in [EASY_button, MEDIUM_button, HARD_button, EXIT_button, info_button]:
             button.changeColor(Positie_cursor)
             button.update(scherm)
 
@@ -213,7 +204,9 @@ def hoofdmenu():
                     starten_met_moeilijkheid("hard")
                 if EXIT_button.CheckForInput(Positie_cursor):
                     pygame.quit()
-                hoofdmenu()
+                if info_button.CheckForInput(Positie_cursor):
+                    toon_info_scherm()
+                
         
         pygame.display.update()  # Scherm bijwerken na elke frame
 
@@ -292,10 +285,19 @@ def spelen(): #scherm om te spelen
     global doolhof, moeilijkheid, gevecht_gewonnen
     minotaurus_verslagen = False
     running = True
+    
+    menu_tekst = get_font(40).render("MENU", True, (255, 255, 255))  # Wit voor de tekst
+    exit_tekst = get_font(40).render("EXIT", True, (255, 255, 255))  # Wit voor de tekst
+
+    # Definieer de posities van de knoppen (menu en exit)
+    menu_rect = menu_tekst.get_rect(center=(100, 775))
+    exit_rect = exit_tekst.get_rect(center=(900, 775))
+    
     while running:
         clock.tick(20) #hiermee wordt de game beperkt tot max 20 frames per seconde, zodat de beweging stabiel en niet te snel gebeurt 
         scherm.fill((206,204,184))  # Maak het scherm bruin, hiermee wordt elke oude loop overschreven 
         
+        Positie_cursor = pygame.mouse.get_pos()
         
         # Speler doen bewegen: 
         keys = pygame.key.get_pressed() # hiermee verzamelen we een overxzicht van welke toetsen gedrukt zijn (heb ik uit de les gehaald)
@@ -338,7 +340,6 @@ def spelen(): #scherm om te spelen
 
         
         if check_botsing(speler, minotaurus):
-            sla_doolhof_staat_op()  # Bewaar de spelstatus
             Fight_MainCode.gevecht()
 
 
@@ -346,6 +347,19 @@ def spelen(): #scherm om te spelen
         teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie)
         speler.draw(scherm)
         
+        if menu_rect.collidepoint(Positie_cursor):
+            pygame.draw.rect(scherm, (0, 255, 0), menu_rect)  # Groene achtergrond voor MENU
+        else:
+            pygame.draw.rect(scherm, (0, 200, 0), menu_rect)  # Donkerder groen voor MENU als het niet gehoverd is
+
+        if exit_rect.collidepoint(Positie_cursor):
+            pygame.draw.rect(scherm, (255, 0, 0), exit_rect)  # Rode achtergrond voor EXIT
+        else:
+            pygame.draw.rect(scherm, (200, 0, 0), exit_rect)  # Donkerder rood voor EXIT als het niet gehoverd is
+         # Tekst knoppen tekenen (beide in wit)
+        scherm.blit(menu_tekst, menu_rect)
+        scherm.blit(exit_tekst, exit_rect)
+         
         if minotaurus_verslagen == False:  
             minotaurus.draw(scherm)  
 
@@ -358,6 +372,15 @@ def spelen(): #scherm om te spelen
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if menu_rect.collidepoint(Positie_cursor):  # Klik op MENU
+                    running = False
+                    hoofdmenu()
+                    return
+                if exit_rect.collidepoint(Positie_cursor):  # Klik op EXIT
+                    pygame.quit()
+                    sys.exit()
+        
         if gevecht_gewonnen:
             terug_naar_doolhof()
             gevecht_gewonnen = False  # Reset de flag om te voorkomen dat het opnieuw wordt aangeroepen
