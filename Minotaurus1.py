@@ -4,6 +4,9 @@ import random
 from Objecten import VastObject, BewegendObject, SCREENWIDTH, SCREENHEIGHT, fps
 from Vijand import Vijand, SCREENWIDTH, SCREENHEIGHT, fps
 clock = pygame.time.Clock()
+vallende_stenen = []
+laatste_val = time.time()
+val_interval = 3
 
 class Minotaurus1(Vijand):
     def __init__(self, x, y, snelheid, basis, hoogte, sprite_png, speler, map_level):
