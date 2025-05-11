@@ -2,15 +2,27 @@
 import pygame # Pygame bibliotheek laden 
 import sys
 import random
-from Minotaurus_Doolhof import *
+from Minotaurus_Doolhof import Minotaurus 
 from Speler_Doolhof import *
-from Button_Doolhof import *
+from Button_Doolhof import Button
 from Doolhof import *
-from Teleporteren_Doolhof import *
+from Teleporteren_Doolhof import teleport_speler
 import time 
-from Objecten import * 
 import Fight_MainCode
+from Objecten import * 
+from Gewonnen import * 
 
+
+
+# Vervolgens initialiseren we pygame: 
+pygame.init() 
+
+fps = 30
+
+
+# de stenen laden (zodat we stenen muur krijgen ipv witte blokjes):
+steen = pygame.image.load("steen.png")
+steen = pygame.transform.scale(steen, (blokjesgrootte, blokjesgrootte))  # de afbeelding van schaal aanpassen zodat het overeenkomt met de grootte van een blokje
 
 # Voor verder gebruik bepalen we de startposities (x, y) van de minotaurus (vijand). Dit doen we door voor zowel x als y de functie random_pos() op te roepen voor positie [0] en positie [1]:
 start_x_vijand = random_pos()[0]
@@ -46,18 +58,18 @@ botsing_afbeelding = pygame.transform.scale(botsing_afbeelding, (schermbreedte, 
 gewonnen_afbeelding = pygame.image.load("YouWon.png")  # Zorg ervoor dat je een afbeelding hebt met deze naam
 gewonnen_afbeelding = pygame.transform.scale(gewonnen_afbeelding, (schermbreedte, schermhoogte))
 
-# Globale variabelen voor het bewaren van de staat van het doolhof
-voormalig_doolhof = None
-voormalige_speler_x = None
-voormalige_speler_y = None
-voormalige_inventory = None
+info_afbeelding = pygame.image.load("info_scherm.png")  # Jouw info-PNG
+info_afbeelding = pygame.transform.scale(info_afbeelding, (schermbreedte, schermhoogte))
 
-def get_font(size):
-    return pygame.font.Font(None, size)
 
+# Hiermee checken we of er een botsing is tussen de speler en de minotaurus: 
 def check_botsing(speler, minotaurus):
     return speler.rect.colliderect(minotaurus.rect)
 # zowel de speler als de minotaurus hebben een rechthoek (rect) die gebruikt wordt om een object in het spel visueel te representeren. Hierdoor kunnen we controleren of er een overlap (botsing) is tussen de speler en de minotaurus met colliderect (geeft True als ze elkaar raken en anders False)
+
+# Met deze functie wordt het een lettertype ingevoerd met als input een bepaalde grootte:
+def get_font(size):
+    return pygame.font.Font(None, size)
 
 def check_item_opname(speler):
     global sleutel_locatie
@@ -85,6 +97,109 @@ def check_item_opname(speler):
             scherm.blit(Uitgang_open_tekst, Uitgang_open_rect)  # hiermee tekenen we de tekst op het scherm
             pygame.display.update()  # Werkt het scherm bij
             pygame.time.delay(200) #hoe lang een frame op het scherm zichtbaar blijft 
+
+def starten_met_moeilijkheid(moeilijkheidsgraad):
+    global moeilijkheid, draad_locaties, minotaurus
+    moeilijkheid = moeilijkheidsgraad
+    
+    # Bepaal het aantal draden op basis van de moeilijkheidsgraad
+    if moeilijkheid == "easy":
+        aantal_draden = 5
+        minotaurus_snelheid = 15  # Langzaam
+    elif moeilijkheid == "medium":
+        aantal_draden = 4
+        minotaurus_snelheid = 10  # Gemiddeld
+    else:  # hard
+        aantal_draden = 3
+        minotaurus_snelheid = 5  # Snel
+
+    # Genereer de dradenlocaties en sla ze op
+    draad_locaties = kies_draadlocaties(aantal_draden)
+    
+    # Reset de minotaurus met de nieuwe snelheid
+    start_x_vijand = random_pos()[0]
+    start_y_vijand = random_pos()[1]
+    minotaurus = Minotaurus(start_x_vijand * blokjesgrootte, start_y_vijand * blokjesgrootte, snelheid=minotaurus_snelheid)
+
+    game_over(False)
+    gewonnen(False)
+    reset_game()
+    spelen()
+
+
+# Function to reset everything in the game to start fresh
+def reset_game():
+    global speler, minotaurus, sleutel_locatie
+    # Reset player position to starting point
+    speler.rect.x = start_x_speler * blokjesgrootte  # Set player X position
+    speler.rect.y = start_y_speler * blokjesgrootte  # Set player Y position
+    # Reset minotaur position to a new random location
+    start_x_vijand = random_pos()[0]  # Generate random X for minotaur
+    start_y_vijand = random_pos()[1]  # Generate random Y for minotaur
+    minotaurus.rect.x = start_x_vijand * blokjesgrootte  # Set minotaur X position
+    minotaurus.rect.y = start_y_vijand * blokjesgrootte  # Set minotaur Y position
+    # Reset sleutel en uitgang
+    sleutel_locatie = (9, 17)  # of waar je de sleutel oorspronkelijk had
+    doolhof[23][32] = 'X'  # Zorg dat dit de originele waarde is vóórdat de uitgang zichtbaar werd
+
+    # Leeg eventueel ook de inventaris van de speler
+    speler.inventaris.clear()
+
+def toon_info_scherm():
+    running = True
+    while running:
+        scherm.blit(info_afbeelding, (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # ESC = terug naar hoofdmenu
+                    running = False
+        pygame.display.update()
+
+def hoofdmenu(): 
+    running = True  # Variabele om de loop te controleren
+    
+    
+    while running:
+        scherm.blit(achtergrond_afbeelding, (0, 0))  # Teken de afbeelding op positie (0, 0)
+
+        Positie_cursor = pygame.mouse.get_pos()
+        Menu_tekst = get_font(75).render("Slaying The Minotaur", True, (255, 255, 255) )
+        Menu_rect = Menu_tekst.get_rect(center=(500, 300))
+
+        # Knoppen
+        EASY_button = Button(button_surface, (500, 410), "EASY", get_font(50), 'Green', 'White')
+        MEDIUM_button = Button(button_surface, (500, 510), "MEDIUM", get_font(50), 'Yellow', 'White')
+        HARD_button = Button(button_surface, (500, 610), "HARD", get_font(50), 'Red', 'White')
+        EXIT_button = Button(button_surface, (500, 710), "EXIT", get_font(50), 'Green', 'White')
+        INFO_button = Button(button_surface, (875, 50), "INFO", get_font(50), 'Blue', 'White')
+
+        scherm.blit(Menu_tekst, Menu_rect)
+
+        for button in [EASY_button, MEDIUM_button, HARD_button, EXIT_button, INFO_button]:
+            button.changeColor(Positie_cursor)
+            button.update(scherm)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # wanneer je op het kruisje drukt
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN: #hier gaan we kijken op welke knop er gedrukt wordt
+                if EASY_button.CheckForInput(Positie_cursor):
+                    starten_met_moeilijkheid("easy")
+                if MEDIUM_button.CheckForInput(Positie_cursor):
+                    starten_met_moeilijkheid("medium")
+                if HARD_button.CheckForInput(Positie_cursor):
+                    starten_met_moeilijkheid("hard")
+                if EXIT_button.CheckForInput(Positie_cursor):
+                    pygame.quit()
+                if INFO_button.CheckForInput(Positie_cursor):
+                    toon_info_scherm()
+                
+        
+        pygame.display.update()  # Scherm bijwerken na elke frame
 
 def game_over(flag):
     # restart knop toevoegen en dan functie restart definieren en dan functie aanroepen als je op restart drukt 
@@ -122,34 +237,6 @@ def game_over(flag):
         pygame.display.update()  # Scherm bijwerken na elke frame
 
 
-def starten_met_moeilijkheid(moeilijkheidsgraad):
-    global moeilijkheid, draad_locaties, minotaurus
-    moeilijkheid = moeilijkheidsgraad
-    
-    # Bepaal het aantal draden op basis van de moeilijkheidsgraad
-    if moeilijkheid == "easy":
-        aantal_draden = 5
-        minotaurus_snelheid = 15  # Langzaam
-    elif moeilijkheid == "medium":
-        aantal_draden = 4
-        minotaurus_snelheid = 10  # Gemiddeld
-    else:  # hard
-        aantal_draden = 3
-        minotaurus_snelheid = 5  # Snel
-
-    # Genereer de dradenlocaties en sla ze op
-    draad_locaties = kies_draadlocaties(aantal_draden)
-    
-    # Reset de minotaurus met de nieuwe snelheid
-    start_x_vijand = random_pos()[0]
-    start_y_vijand = random_pos()[1]
-    minotaurus = Minotaurus(start_x_vijand * blokjesgrootte, start_y_vijand * blokjesgrootte, snelheid=minotaurus_snelheid)
-
-    game_over(False)
-    gewonnen(False)
-    reset_game()
-    spelen()
-    
 def gewonnen(flag):
     flag 
     running = True
@@ -184,76 +271,24 @@ def gewonnen(flag):
                     return  # Exit the function
         
         pygame.display.update()  # Scherm bijwerken na elke frame
-              
 
-def reset_game():
-    global speler, minotaurus, sleutel_locatie
-    # Reset player position to starting point
-    speler.rect.x = start_x_speler * blokjesgrootte  # Set player X position
-    speler.rect.y = start_y_speler * blokjesgrootte  # Set player Y position
-    # Reset minotaur position to a new random location
-    start_x_vijand = random_pos()[0]  # Generate random X for minotaur
-    start_y_vijand = random_pos()[1]  # Generate random Y for minotaur
-    minotaurus.rect.x = start_x_vijand * blokjesgrootte  # Set minotaur X position
-    minotaurus.rect.y = start_y_vijand * blokjesgrootte  # Set minotaur Y position
-    # Reset sleutel en uitgang
-    sleutel_locatie = (9, 17)  # of waar je de sleutel oorspronkelijk had
-    doolhof[23][32] = 'X'  # Zorg dat dit de originele waarde is vóórdat de uitgang zichtbaar werd
-
-    # Leeg eventueel ook de inventaris van de speler
-    speler.inventaris.clear()
-
-def hoofdmenu(): 
-    running = True  # Variabele om de loop te controleren
-    while running:
-        scherm.blit(achtergrond_afbeelding, (0, 0))  # Teken de afbeelding op positie (0, 0)
-
-        Positie_cursor = pygame.mouse.get_pos()
-        Menu_tekst = get_font(75).render("Slaying The Minotaur", True, (255, 255, 255) )
-        Menu_rect = Menu_tekst.get_rect(center=(500, 300))
-
-        # Knoppen
-        EASY_button = Button(button_surface, (500, 410), "EASY", get_font(50), 'Green', 'White')
-        MEDIUM_button = Button(button_surface, (500, 510), "MEDIUM", get_font(50), 'Yellow', 'White')
-        HARD_button = Button(button_surface, (500, 610), "HARD", get_font(50), 'Red', 'White')
-        EXIT_button = Button(button_surface, (500, 710), "EXIT", get_font(50), 'Green', 'White')
-        
-
-        scherm.blit(Menu_tekst, Menu_rect)
-
-        for button in [EASY_button, MEDIUM_button, HARD_button, EXIT_button]:
-            button.changeColor(Positie_cursor)
-            button.update(scherm)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # wanneer je op het kruisje drukt
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN: #hier gaan we kijken op welke knop er gedrukt wordt
-                if EASY_button.CheckForInput(Positie_cursor):
-                    starten_met_moeilijkheid("easy")
-                if MEDIUM_button.CheckForInput(Positie_cursor):
-                    starten_met_moeilijkheid("medium")
-                if HARD_button.CheckForInput(Positie_cursor):
-                    starten_met_moeilijkheid("hard")
-                if EXIT_button.CheckForInput(Positie_cursor):
-                    pygame.quit()
-                hoofdmenu()
-        
-        pygame.display.update()  # Scherm bijwerken na elke frame
-        
-
-
-        
 def spelen(): #scherm om te spelen
     global doolhof, moeilijkheid
     minotaurus_verslagen = False
     running = True
     
+    menu_tekst = get_font(40).render("MENU", True, (255, 255, 255))  # Wit voor de tekst
+    exit_tekst = get_font(40).render("EXIT", True, (255, 255, 255))  # Wit voor de tekst
+
+    # Definieer de posities van de knoppen (menu en exit)
+    menu_rect = menu_tekst.get_rect(center=(100, 775))
+    exit_rect = exit_tekst.get_rect(center=(900, 775))
+    
     while running:
         clock.tick(20) #hiermee wordt de game beperkt tot max 20 frames per seconde, zodat de beweging stabiel en niet te snel gebeurt 
         scherm.fill((206,204,184))  # Maak het scherm bruin, hiermee wordt elke oude loop overschreven 
         
+        Positie_cursor = pygame.mouse.get_pos()
         
         # Speler doen bewegen: 
         keys = pygame.key.get_pressed() # hiermee verzamelen we een overxzicht van welke toetsen gedrukt zijn (heb ik uit de les gehaald)
@@ -301,10 +336,24 @@ def spelen(): #scherm om te spelen
         if speler_locatie == (23,32): 
             Fight_MainCode.gevecht()
 
+
         # Teken alles
         teken_doolhof(scherm, blokjesgrootte, doolhof, draad_locaties, sleutel_locatie)
         speler.draw(scherm)
         
+        if menu_rect.collidepoint(Positie_cursor):
+            pygame.draw.rect(scherm, (0, 255, 0), menu_rect)  # Groene achtergrond voor MENU
+        else:
+            pygame.draw.rect(scherm, (0, 200, 0), menu_rect)  # Donkerder groen voor MENU als het niet gehoverd is
+
+        if exit_rect.collidepoint(Positie_cursor):
+            pygame.draw.rect(scherm, (255, 0, 0), exit_rect)  # Rode achtergrond voor EXIT
+        else:
+            pygame.draw.rect(scherm, (200, 0, 0), exit_rect)  # Donkerder rood voor EXIT als het niet gehoverd is
+         # Tekst knoppen tekenen (beide in wit)
+        scherm.blit(menu_tekst, menu_rect)
+        scherm.blit(exit_tekst, exit_rect)
+         
         if minotaurus_verslagen == False:  
             minotaurus.draw(scherm)  
 
@@ -317,6 +366,20 @@ def spelen(): #scherm om te spelen
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if menu_rect.collidepoint(Positie_cursor):  # Klik op MENU
+                    running = False
+                    hoofdmenu()
+                    return
+                if exit_rect.collidepoint(Positie_cursor):  # Klik op EXIT
+                    pygame.quit()
+                    sys.exit()
+        
+        
 
         # Update het scherm
         pygame.display.flip()
+
+hoofdmenu()
+# Stop Pygame
+pygame.quit()
