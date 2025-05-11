@@ -97,9 +97,9 @@ def game_run(levels):
     if huidige_level == 2:
         Zwaard.draw(screen) 
         if time.time() - start_time_level > 5: #aangezien de minotaurus geneutraliseerd is in level 1 neemt het een beetje tijd voordat hij verschijnt
-            MinoVolg.draw(screen)
-            MinoVolg.beweging(Theseus, niveau2)
-            if Theseus.rect.colliderect(MinoVolg.rect):
+            Mino2.draw(screen)
+            Mino2.beweging(Theseus, niveau2)
+            if Theseus.rect.colliderect(Mino2.rect):
                 Theseus.alive = False
         if Theseus.rect.colliderect(Zwaard.rect):
             Theseus.inventory.append(Zwaard)
@@ -201,4 +201,4 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()     
+    pygame.quit()   
