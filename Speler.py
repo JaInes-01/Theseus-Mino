@@ -69,9 +69,11 @@ class Speler(BewegendObject):
             self.vy = (-self.snelheid)*4 #verticale snelheid is negatief want naar boven gericht
             self.op_grond = False
         self.zwaartekracht()
+
         
     def zwaartekracht(self):
         self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
+    
     
     def zwaard(self, zwaard):
         if self.rect.colliderect(zwaard.rect):
@@ -94,7 +96,6 @@ class Speler(BewegendObject):
         for tile in map_level.tile_list:
             #op het moment dat de collisie wordt waargenomen is er al overlapping behalve als de speler op die exact moment stopt te bewegen, dus moeten we een toekomstige scenario gebruiken
             future_y = pygame.Rect(self.rect.x, self.rect.y + vy, self.basis, self.hoogte)
-            
             if tile.rect.colliderect(future_y):
                 #als de collsiie van boven gebeurt, als de speler valt
                 if self.vy > 0:
@@ -107,12 +108,14 @@ class Speler(BewegendObject):
                     self.vy = 0  
                     self.op_grond = False
         return vy
-        
+    
+   
+    
     def beweging(self, map_level):
         if self.damage_timer > 0:
-            self.damage_timer -= self.no_damage_time_left/fps   # Decrease the timer
+            self.damage_timer -= self.no_damage_time_left/fps #geeft het aantal ms dat afgetrokken wordt per frame 
             if self.damage_timer < 0:
-                self.damage_timer = 0
+                self.damage_timer = 0 #wanneer de timer negatief is, dan wordt het onmiddelijk naar 0 gezet
         if not self.alive:
             return# speler stopt direct wnr hij dood is (dus hp helemaal op)
         if self.pushed:
@@ -121,32 +124,28 @@ class Speler(BewegendObject):
                 self.vx = 0
         else: 
             self.vx = self.horizontaal()
-              
         self.sprong()
         vx = self.collisie_x(self.vx, map_level)
         self.move(vx, 0)
         vy = self.collisie_y(map_level)
         self.move(0,vy)
-        
         if self.gewapend and self.m_pressed:
             print("gewapend en m_pressed")
-            
         #ervoor zorgen dat speler niet uit de scherm komt
         if self.rect.left < 0: 
             self.rect.left = 0
         if self.rect.right > SCREENWIDTH:
             self.rect.right = SCREENWIDTH 
-
+        
     def draw(self, screen):
         if self.damage_timer > 0:
-        # Flash effect: only draw every 100 ms
+        # Flash effect: sprite enkel elke 100 ms getekend
             if (pygame.time.get_ticks() // 100) % 2 == 0:
                 return  # skip drawing this frame
         if self.facing_left:
             flipped_sprite = pygame.transform.flip(self.sprite, True, False) #enkel horizontaal flippen
             screen.blit(flipped_sprite, self.rect.topleft)
         else:
-            screen.blit(self.sprite, self.rect.topleft)
             screen.blit(self.sprite, self.rect.topleft)
 
     def draw_healthbar(self, screen):# https://www.youtube.com/watch?v=E82_hdoe06M
