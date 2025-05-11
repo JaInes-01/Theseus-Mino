@@ -10,16 +10,17 @@ class Minotaurus2(Vijand):
         self.vx = snelheid
         self.vy = 0
         self.op_grond = False
-        self.spring_hoogte = speler.spring_hoogte
-        self.target = speler    
+        self.spring_hoogte = speler.spring_hoogte# Hoogte van een sprong gelijk aan die van de speler (voor gelijke mechanica)
+        self.target = speler   # De speler is het doelwit dat gevolgd wor  
     
+    # Bepaalt het bewegingsgedrag van de Minotaurus2
     def beweging(self, speler, map_level):
-        self.zwaartekracht()  
-        self.vy = self.collisie_y(map_level)
-        self.move(0, self.vy)
+        self.zwaartekracht()  # Pas zwaartekracht toe
+        self.vy = self.collisie_y(map_level)# Controleer of hij op de grond botst
+        self.move(0, self.vy)# Beweeg verticaal op basis van zwaartekracht
         
-        if self.op_grond:
-            marge = 40
+        if self.op_grond:# Beweeg verticaal op basis van zwaartekracht
+            marge = 40# Dode zone waarin hij niet beweegt (als hij dichtbij genoeg is)
             if self.target.rect.centerx < self.rect.centerx and abs(self.target.rect.centerx - self.rect.centerx) > marge: #kijkt of de speler (via het middelpunt van rechthoek van speler) links van de minotaurus ligt
                 self.move(-self.snelheid, 0) #minotaurus verplaats zich naar links met self.snelheid aantal pixels
                 self.facing_left = True #Nodig voor draw functie om te weten of we de image moeten flippen of niet
