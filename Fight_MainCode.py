@@ -223,4 +223,4 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     clock = pygame.time.Clock()
     gevecht()
-    pygame.quit()       
+    pygame.quit()     
