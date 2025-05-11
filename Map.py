@@ -15,11 +15,12 @@ class Map():
     def __init__(self, matrix):
         self.tile_list = []
         self.matrix = matrix
-        for rij_index in range(len(self.matrix)):       #y-pos
+        #we gereneren blokken die de tile_grootte als zijde hebben 
+        for rij_index in range(len(self.matrix)): #y-pos
             for kol_index in range(len(self.matrix[rij_index])):
                 x = kol_index * tile_grootte
                 y = rij_index * tile_grootte
-                    
+        
                 if self.matrix[rij_index][kol_index] == 1: #nummer 1 is een blok
                     tile_afb = VastObject(x, y, tile_grootte/SCREENWIDTH, tile_grootte/SCREENWIDTH, "blok.png")
                     self.tile_list.append(tile_afb)
