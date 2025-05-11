@@ -91,6 +91,7 @@ def game_run(levels):
         if vijand.health < 1:  # Controleer of vijand verslagen is
             pijl.draw(screen) #vokg de pijl om naar level 2 te gaan
             if Theseus.rect.right == SCREENWIDTH: # Ga naar level 2
+                huidige_level += 1
                 reset_level()  # Reset de level instellingen
                 return  # Stop de huidige run en ga verder met de nieuwe level
 
