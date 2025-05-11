@@ -122,7 +122,7 @@ class Minotaurus1(Vijand):
             #wanneer het vershil tussen de start en de huidige tijd groter is dan de duur, dan is de vertraging afgelopen
             if tijdsverschil > self.vertraag_duur:
                 self.vertraagd = False# stop met vertragen
-                self.vx = self.snelheidzet snelheid terug naar oorspronkelijke snelheid
+                self.vx = self.snelheidzet #snelheid terug naar oorspronkelijke snelheid
                 self.versnel()# versnelt opnieuw 
 
                 
