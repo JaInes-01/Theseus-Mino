@@ -11,6 +11,9 @@ from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_ve
 from Mini_monsters import Mini_monsters
 from Vallende_steen import Vallende_steen, vallende_stenen, laatste_val, val_interval
 from MinotaurusVolg import MinotaurusVolg
+from Samengevoegde_Code import gevecht_gewonnen
+
+
 
 background = pygame.image.load("background_fight.png")
 background = pygame.transform.scale(background, (SCREENWIDTH, SCREENHEIGHT))
@@ -85,7 +88,6 @@ def game_run(levels):
         
     map_data.draw(screen)
     
-            
     if huidige_level == 1:
         nu = time.time()
         if 0 < vijand.health < 4 and (Theseus.alive):
@@ -96,20 +98,17 @@ def game_run(levels):
             for steen in vallende_stenen:
                 steen.val()
                 steen.draw(screen)
-                #als de speler een steen op zijn hoofd krijgt, dan verliest hij hp
                 if steen.rect.colliderect(Theseus.rect) and Theseus.damage_timer == 0:
                     Theseus.health -= 1
                     Theseus.damage_timer = Theseus.no_damage_time_left
-        if vijand.health < 1:
-            pijl.draw(screen)
-            if Theseus.rect.right == SCREENWIDTH:
-                huidige_level += 1
-                reset_level()
-                
-      
+        
+        if all(vijand.health <= 0 for vijand in vijanden):  # Controleer of alle vijanden verslagen zijn
+            huidige_level += 1  # Ga naar level 2
+            reset_level()  # Reset de level instellingen
+            return  # Stop de huidige run en ga verder met de nieuwe level
+
     if huidige_level == 2:
-        #if Theseus.rect.bottom < SCREENHEIGHT - 7*tile_grootte:
-        if time.time()-start_time_level > 5:
+        if time.time() - start_time_level > 5:
             MinoVolg.draw(screen)
             MinoVolg.beweging(Theseus, niveau2)
             if Theseus.rect.colliderect(MinoVolg.rect):
@@ -123,16 +122,11 @@ def game_run(levels):
             Theseus.gewapend = True 
         else:
             Theseus.gewapend = False
-        if all(vijand.health <= 0 for vijand in vijanden):
-            pygame.quit
-            return "gevecht_gewonnen"
-            #pijl = VastObject(800, 5*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
-            #pijl.draw(screen)
-            #if Theseus.rect.right == SCREENWIDTH:
-                #huidige_level += 1
-                #reset_level()
-                #start_time_level = 0
-                #gevecht_gewonnen = True
+        
+        if all(vijand.health <= 0 for vijand in vijanden):  # Controleer of alle vijanden in level 2 verslagen zijn
+            gevecht_gewonnen = True  # Toon de "YOU WON" boodschap
+            return
+                
     Theseus.draw(screen)
     Theseus.beweging(map_data)
     Theseus.draw_healthbar(screen)
@@ -140,16 +134,15 @@ def game_run(levels):
     if Theseus.health <= 0:
         Theseus.alive = False 
     
-    
     if not Theseus.alive:
         screen.fill((0, 0, 0))
-        font = pygame.font.SysFont(None, 80)# lettertype en grootte
-        game_over_text = font.render("GAME OVER", True, (255, 0, 0))#Zet tekst om naar afbeelding (True -> gladde randen)
-        text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))#rechthoek van game over afbeelding in het midden van afbeelding zetten
-        screen.blit(game_over_text, text_rect)#tekent afbeelding op scherm
+        font = pygame.font.SysFont(None, 80)
+        game_over_text = font.render("GAME OVER", True, (255, 0, 0))
+        text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 2))
+        screen.blit(game_over_text, text_rect)
         font = pygame.font.SysFont(None, 40)
-        play_again_text = font.render("press 'r' to play again", True, (255, 255, 255))#Zet tekst om naar afbeelding (True -> gladde randen)
-        text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 4))#rechthoek van game over afbeelding in het midden van afbeelding zetten
+        play_again_text = font.render("press 'r' to play again", True, (255, 255, 255))
+        text_rect = game_over_text.get_rect(center=(SCREENWIDTH // 2, SCREENHEIGHT // 4))
         screen.blit(play_again_text, text_rect)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_r]:
@@ -233,6 +226,7 @@ def gevecht():
                 
         if intro.finished:
             game_run(levels)
+        
             
     
         #we geven een return value aan de gevecht functie die aangeeft of de speler gewonnen had of verloren voordat hij het gevecht ver
@@ -243,4 +237,3 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     gevecht()
     pygame.quit()     
-                   
