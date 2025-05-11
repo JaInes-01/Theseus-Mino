@@ -9,6 +9,8 @@ from Minotaurus1 import Minotaurus1, Vallende_steen, vallende_stenen, laatste_va
 from Minotaurus2 import Minotaurus2
 from Mini_monsters import Mini_monsters
 from Map import Map, aantal_blokken_horizontaal, tile_grootte, aantal_blokken_verticaal, map_niv1, map_niv2
+from Gewonnen import *
+
 pygame.init()
 clock = pygame.time.Clock()
 fps = 30
