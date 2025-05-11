@@ -16,6 +16,7 @@ class Minotaurus1(Vijand):
         self.op_grond = False# om te weten of minotaurus op grond staat of niet (nodig voor zwaartekracht)
         self.vertraagd = False #want wanneer de vijand botst tegen de speler willen we dat hij voor enkele seconden vertraagt
         self.versneld = False
+        self.snelheid = snelheid 
         self.vertraag_duur = 1#tijd tot dat hij normale snelheid heeft
         self.vertraag_start = 0#tijdstip waarop vetraging begon (om vergelijken met huidige tijd)
         self.max_health = 6 #max aantal levens van minotaurus 
@@ -122,7 +123,7 @@ class Minotaurus1(Vijand):
             #wanneer het vershil tussen de start en de huidige tijd groter is dan de duur, dan is de vertraging afgelopen
             if tijdsverschil > self.vertraag_duur:
                 self.vertraagd = False# stop met vertragen
-                self.vx = self.snelheidzet #snelheid terug naar oorspronkelijke snelheid
+                self.vx = self.snelheid #snelheid terug naar oorspronkelijke snelheid
                 self.versnel()# versnelt opnieuw 
 
                 
