@@ -8,23 +8,24 @@ vallende_stenen = []
 laatste_val = time.time()
 val_interval = 3
 
+#klasse minotaurus 1 erft van vijand- klasse 
 class Minotaurus1(Vijand):
     def __init__(self, x, y, snelheid, basis, hoogte, sprite_png, speler, map_level):
         super().__init__(x, y, snelheid, basis, hoogte, sprite_png, speler, map_level)
         self.facing_left = True #in het begin kijkt de minotaurus naar links want hij zit helemaal links
-        self.op_grond = False
-        self.vertraagd = False #wanneer de vijand botst tegen de speler willen we dat hij voor enkele seconden vertraagt
+        self.op_grond = False# om te weten of minotaurus op grond staat of niet (nodig voor zwaartekracht)
+        self.vertraagd = False #want wanneer de vijand botst tegen de speler willen we dat hij voor enkele seconden vertraagt
         self.versneld = False
-        self.vertraag_duur = 1
-        self.vertraag_start = 0
-        self.max_health = 6 #max aantal levens is 3 
-        self.health = self.max_health
-        self.alive = True 
+        self.vertraag_duur = 1#tijd tot dat hij normale snelheid heeft
+        self.vertraag_start = 0#tijdstip waarop vetraging begon (om vergelijken met huidige tijd)
+        self.max_health = 6 #max aantal levens van minotaurus 
+        self.health = self.max_health#wnr de minotaurus geslaan word dan verlaagt zijn totale leven
+        self.alive = True # boolean om aan te geven of de minotaurus nog leeft (True) of dood is (False)
         
         self.damage_timer = 0 #wachttijd tss schade (dus tijd die nog moet aftellen)
         self.no_damage_time_left = 1000 #speler is tijdens 1 sec onkwetsbaar nadat hij geraakt werd
         
-        self.versnelling = 4
+        self.versnelling = 4 # Waarde waarmee de snelheid toeneemt wanneer de minotaurus versnelt
         self.nodige_health = 0
         
     def push(self, speler):
