@@ -124,13 +124,15 @@ def game_run(levels):
         else:
             Theseus.gewapend = False
         if all(vijand.health <= 0 for vijand in vijanden):
-            pijl = VastObject(800, 5*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
-            pijl.draw(screen)
-            if Theseus.rect.right == SCREENWIDTH:
+            pygame.quit
+            return "gevecht_gewonnen"
+            #pijl = VastObject(800, 5*tile_grootte, 1/9, 1/9, "pijl_gevecht.png")
+            #pijl.draw(screen)
+            #if Theseus.rect.right == SCREENWIDTH:
                 #huidige_level += 1
                 #reset_level()
                 #start_time_level = 0
-                gevecht_gewonnen = True
+                #gevecht_gewonnen = True
     Theseus.draw(screen)
     Theseus.beweging(map_data)
     Theseus.draw_healthbar(screen)
