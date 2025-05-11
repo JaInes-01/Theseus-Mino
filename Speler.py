@@ -1,40 +1,47 @@
 import pygame
 import time
-clock = pygame.time.Clock()
 from Objecten import BewegendObject, SCREENWIDTH, SCREENHEIGHT, fps
-
+clock = pygame.time.Clock()
 
 class Speler(BewegendObject):
-    
     def __init__(self, x, y, snelheid, fact_basis, fact_hoogte, sprite_png, map_level, zwaard): #snelheid geeft gewoon weer hoe snel de speler zal bewegen
         super().__init__(x, y,snelheid, fact_basis, fact_hoogte, sprite_png)
+        #de speler kijkt per default naar rechts
         self.facing_left = False 
         self.vy = 0
         self.vx = 0
+        #de snelheidscomponenten zullen constant gewijzigd worden dus maken we een vaste attribuut voor de gegeven snelheid
         self.snelheid = snelheid
+        
         #springfucntie
+        #speler spawnt in de lucht
         self.op_grond = False
         self.Fz = 1
+        #hoogte moet afh van de gekozen dimensies, zodat de verhoudingen ongewijzigd blijven bij andere dimensies
         self.spring_hoogte = self.hoogte/3
-        #collisie met vijand
+        
+        #bij een collisie met een vijand bv van boven zal de speler terugstuiteren 
         self.pushed = False
         self.push_start = 0
         self.push_duur = 0.3
+        
         self.max_health = 3 #max aantal levens is 3 
         self.health = self.max_health
         self.alive = True #om te weten of het game over is of niet
         
         self.damage_timer = 0 #wachttijd tss schade (dus tijd die nog moet aftellen)
-        self.no_damage_time_left = 2 #speler is tijdens 1 sec onkwetsbaar nadat hij geraakt werd
+        self.no_damage_time_left = 1000 #speler is tijdens 1 sec onkwetsbaar nadat hij geraakt werd
         
-        self.nodige_points = 9
+        #bij een collsie met een wapen wordt die in een inventory geplaatst en is de speler gewapend. komt er een special attack met de m key
         self.gewapend = False
+        #gewapend + m key => attack op de mino in level 2
         self.m_pressed = False 
-        self.K_RIGHT = False
-        self.K_LEFT = False
+        self.inventory = []
+        #kan handig zijn als we de attacks willen stoppen wanneer de speler gewonnen heeft, zodat die niet verdere hp verliest
         self.level_voltooid = False 
-        self.inventory = [] 
+        
     def horizontaal(self):
+        #we maken een lokaal variabel aan voor de snelheid
         vx = 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
@@ -52,7 +59,6 @@ class Speler(BewegendObject):
             if keys[pygame.K_LEFT]:
                 vx = -self.snelheid*2
                 self.facing_left = True
-            
         return vx
     
     
@@ -63,11 +69,9 @@ class Speler(BewegendObject):
             self.vy = (-self.snelheid)*4 #verticale snelheid is negatief want naar boven gericht
             self.op_grond = False
         self.zwaartekracht()
-
         
     def zwaartekracht(self):
         self.vy += self.Fz #verticale snelheid wordt steeds groter, totdat het positief wordt en bijgevolg naar beneden wordt gericht
-    
     
     def zwaard(self, zwaard):
         if self.rect.colliderect(zwaard.rect):
@@ -103,9 +107,7 @@ class Speler(BewegendObject):
                     self.vy = 0  
                     self.op_grond = False
         return vy
-    
-   
-    
+        
     def beweging(self, map_level):
         if self.damage_timer > 0:
             self.damage_timer -= self.no_damage_time_left/fps   # Decrease the timer
@@ -113,7 +115,6 @@ class Speler(BewegendObject):
                 self.damage_timer = 0
         if not self.alive:
             return# speler stopt direct wnr hij dood is (dus hp helemaal op)
-        
         if self.pushed:
             if time.time() - self.push_start > self.push_duur:
                 self.pushed = False
@@ -135,23 +136,18 @@ class Speler(BewegendObject):
             self.rect.left = 0
         if self.rect.right > SCREENWIDTH:
             self.rect.right = SCREENWIDTH 
-        
-        
+
     def draw(self, screen):
-        
         if self.damage_timer > 0:
         # Flash effect: only draw every 100 ms
             if (pygame.time.get_ticks() // 100) % 2 == 0:
                 return  # skip drawing this frame
-        
         if self.facing_left:
             flipped_sprite = pygame.transform.flip(self.sprite, True, False) #enkel horizontaal flippen
             screen.blit(flipped_sprite, self.rect.topleft)
         else:
             screen.blit(self.sprite, self.rect.topleft)
-
             screen.blit(self.sprite, self.rect.topleft)
-
 
     def draw_healthbar(self, screen):# https://www.youtube.com/watch?v=E82_hdoe06M
         bar_width = self.basis #even lang als de speler
@@ -161,6 +157,7 @@ class Speler(BewegendObject):
         pygame.draw.rect(screen, (255, 0, 0), (x, y, bar_width, bar_height)) # =rode balk = achtergrond van de healthbar
         groene_breedte = bar_width * (self.health / self.max_health) #geeft een percentage maal bar widht om te weten hoe groot de groen bar moet zijn
         pygame.draw.rect(screen, (0, 255, 0), (x, y, groene_breedte, bar_height))
+
 
 
 
